@@ -3,15 +3,15 @@
 
 <h1> Thanks! </h1>
 
-<p> Here is your graph: </p>
+<p> Here is your plot: </p>
 
 <svg xmlns="http://www.w3.org/2000/svg" 
-     width="{{width}}"
-     height="{{height}}"
+     width="{{wwidth}}"
+     height="{{wheight}}"
      <!-- viewPort="0 0 12 12" -->
      version="1.1">
   <!-- gs are for inverting the axis -->
-  <g transform="translate(0,{{height}})">
+  <g transform="translate(0,{{wheight}})">
     <g transform="scale(1,-1)">
       <!-- the line corresponding to the data -->
       <polyline fill="none"
@@ -21,12 +21,22 @@
       <!-- axes -->
       <line fill="none" stroke="black"
 	    stroke-width="3"
-	    x1="0" y1="0"
-	    x2="0" y2="{{height}}"/>
+	    x1="{{offset}}" y1="{{offset}}"
+	    x2="{{offset}}" y2="{{pheight+offset}}"/>
       <line fill="none" stroke="black"
 	    stroke-width="3"
-	    x1="{{width}}" y1="0"
-	    x2="0" y2="0"/>
+	    x1="{{pwidth+offset}}" y1="{{offset}}"
+	    x2="{{offset}}" y2="{{offset}}"/>
     </g>
   </g>
+  <!-- labels -->
+  <!-- xmax -->
+  <text y="{{wheight-offset}}" x="{{wwidth-offset}}">
+    {{xmax}}</text>
+  <!-- ymax -->
+  <text y="{{offset}}" x="{{offset}}">
+    {{ymax}}</text>
+  <!-- xmin -->
+  <text y="{{wheight-offset}}" x="{{offset}}">
+    {{xmin}}</text>
 </svg>

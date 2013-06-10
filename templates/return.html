@@ -1,0 +1,32 @@
+<!doctype html>
+<!-- <?xml version="1.0"?> -->
+
+<h1> Thanks! </h1>
+
+<p> Here is your graph: </p>
+
+<svg xmlns="http://www.w3.org/2000/svg" 
+     width="{{width}}"
+     height="{{height}}"
+     <!-- viewPort="0 0 12 12" -->
+     version="1.1">
+  <!-- gs are for inverting the axis -->
+  <g transform="translate(0,{{height}})">
+    <g transform="scale(1,-1)">
+      <!-- the line corresponding to the data -->
+      <polyline fill="none"
+		stroke="red"
+		stroke-width="3"
+		points="{{data|join(' ')}}"/>
+      <!-- axes -->
+      <line fill="none" stroke="black"
+	    stroke-width="3"
+	    x1="0" y1="0"
+	    x2="0" y2="{{height}}"/>
+      <line fill="none" stroke="black"
+	    stroke-width="3"
+	    x1="{{width}}" y1="0"
+	    x2="0" y2="0"/>
+    </g>
+  </g>
+</svg>

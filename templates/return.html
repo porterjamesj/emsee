@@ -6,29 +6,30 @@
 <p> Here is your plot: </p>
 
 <svg xmlns="http://www.w3.org/2000/svg" 
-     width="{{wwidth}}"
-     height="{{wheight}}"
+     width="{{plot.svgsize[0]}}"
+     height="{{plot.svgsize[1]}}"
      <!-- viewPort="0 0 12 12" -->
      version="1.1">
   <!-- gs are for inverting the axis -->
-  <g transform="translate(0,{{wheight}})">
+  <g transform="translate(0,{{plot.svgsize[1]}})">
     <g transform="scale(1,-1)">
       <!-- the line corresponding to the data -->
       <polyline fill="none"
 		stroke="red"
 		stroke-width="3"
-		points="{{data|join(' ')}}"/>
+		points="{{plot.datastring|join(' ') }}"/>
       <!-- axes -->
       <line fill="none" stroke="black"
 	    stroke-width="3"
-	    x1="{{offset}}" y1="{{offset}}"
-	    x2="{{offset}}" y2="{{pheight+offset}}"/>
+	    x1="{{plot.xaxis[0][0]}}" y1="{{plot.xaxis[0][1]}}"
+	    x2="{{plot.xaxis[1][0]}}" y2="{{plot.xaxis[1][1]}}"/>
       <line fill="none" stroke="black"
 	    stroke-width="3"
-	    x1="{{pwidth+offset}}" y1="{{offset}}"
-	    x2="{{offset}}" y2="{{offset}}"/>
+	    x1="{{plot.yaxis[0][0]}}" y1="{{plot.yaxis[0][1]}}"
+	    x2="{{plot.yaxis[1][0]}}" y2="{{plot.yaxis[1][1]}}"/>
     </g>
   </g>
+  {#
   <!-- labels -->
   <!-- xmax -->
   <text y="{{wheight-offset}}" x="{{wwidth-offset}}">
@@ -39,4 +40,5 @@
   <!-- xmin -->
   <text y="{{wheight-offset}}" x="{{offset}}">
     {{xmin}}</text>
+    #}
 </svg>

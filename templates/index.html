@@ -1,12 +1,18 @@
-<!doctype html>
+{% extends "layout.html" %}
+
+{% block body %}
+<script src="{{ url_for('static',filename='js/drawgraph.js') }}"></script>
+
 <h1> Hello </h1>
 
 <p> Enter an equation in terms of x and we will plot it. </p>
 
-<form id='eqform' method='post' action=''>
-  <p>
-    Equation: <input type='text' name='equation'/> 
-  </p>
-    <input type='submit' value='Submit' />
-  </p>
-</form>
+<input type="text" name="equation">
+
+<a href="#" id="submit">submit equation</a>
+
+<p id="word"></p>
+
+<svg id="plot"></svg>
+
+{% endblock %}

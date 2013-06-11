@@ -33,9 +33,9 @@ class Plot:
         self.func = func
         self.xmin = float(limits[0])
         self.xmax = float(limits[1])
-        self.pwidth = psize[0]
-        self.pheight = psize[1]
-        self.offset = offset
+        self.pwidth = float(psize[0])
+        self.pheight = float(psize[1])
+        self.offset = float(offset)
 
         self.stepsize = (self.xmax-self.xmin) / ((self.xmax-self.xmin)*100)
 
@@ -86,10 +86,10 @@ class Plot:
         svg['x'] = self.scaledxs + self.offset
         svg['y'] = self.scaledys + self.offset
 
-        xaxispos = (-self.ymin/(self.ymax-self.ymin))*self.pheight
-        yaxispos = (-self.xmin/(self.xmax-self.xmin))*self.pwidth
+        xaxispos = float((max(0,-self.ymin)/(self.ymax-self.ymin))*self.pheight)
+        yaxispos = float((max(0,-self.xmin)/(self.xmax-self.xmin))*self.pwidth)
 
-        print xaxispos,yaxispos
+        print self.ymin,self.ymax,self.pheight,xaxispos
         
         svg['xaxis'] = ((self.offset,self.offset+xaxispos),
                         (self.offset+self.pwidth,self.offset+xaxispos))
@@ -103,6 +103,7 @@ class Plot:
         svg['svgsize'] = (self.pwidth+2*self.offset,
                           self.pheight+2*self.offset)
 
-        svg['datastring'] =  ["{0},{1}".format(x,y) for (x,y) in zip(svg['x'],svg['y'])]
+        svg['datastring'] =  " ".join(["{0},{1}".format(x,y)
+                              for (x,y) in zip(svg['x'],svg['y'])])
         
         return svg

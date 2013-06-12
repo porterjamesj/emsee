@@ -3,16 +3,19 @@
 {% block body %}
 <script src="{{ url_for('static',filename='js/drawgraph.js') }}"></script>
 
-<h1> Hello </h1>
+<body>
+  <h1> Hello </h1>
 
-<p> Enter an equation in terms of x and we will plot it. </p>
+  <p> Enter an equation in terms of x and we will plot it. </p>
 
-<input type="text" name="equation">
+  <input type="text" name="equation">
 
-<a href="#" id="submit">submit equation</a>
+    <a href="#" id="submit">submit equation</a>
 
-<p id="word"></p>
+    <p id="word"></p>
 
-<svg id="plot"></svg>
+{# Plot will go here #}
+
+</body>
 
 {% endblock %}

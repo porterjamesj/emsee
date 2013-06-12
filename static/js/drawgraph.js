@@ -1,34 +1,43 @@
-$(function() {
+$(function() {    
 
-    var callback = function(data) {
-	console.log(data.datastring);
-	console.log(data.svgsize);
+    // Parameters for the svg canvas
+    var width = 400;
+    var height = 100;
+
+    // Make an svg to draw the plot on
+    d3.select("body").append("svg")
+	.attr("width",width)
+	.attr("height",height);
+
+    var callback = function(data) {	
 	$("#word").text(data.word);
 
-	var svg = $('#plot');
+	var points = data.points
 
-	// Set width and size of the plot
-	svg.attr('width',data.svgsize[0]);
-	svg.attr('height',data.svgsize[1]);
-	svg.attr('xmlns','http://www.w3.org/2000/svg');
-	svg.attr('version','1.1');
+	// Scales
+	var xsc = d3.scale.linear()
+	    .domain([data.xmin,data.xmax])
+	    .range([0,width]);
 
-	//Set up transformations
-	svg.append('<g id="trans"></g>');
-	$('#trans').attr('transform','translate(0,' + data.svgsize[1] + ')');
-	$('#trans').append('<g id="scale"></g>');
-	$('#scale').attr('transform','scale(1,-1)');
-	
-	// Add the line itself
-	$('#scale').append('<polyline id="line"/>');
+	var ysc = d3.scale.linear()
+	    .domain([d3.min(_.pluck(points,1)),d3.max(_.pluck(points,1))])
+	    .range([height,0]);
 
+	// Draw the plot
+	var svg = d3.select("svg");
+	var lineFunction = d3.svg.line()
+	    .x(function(d) { return xsc(d[0]); })
+	    .y(function(d) { return ysc(d[1]); })
+	    .interpolate("basis");
 
-	//Set its attrs
-	var attrs = [["fill","none"],
-		     ["stroke","red"],
-		     ["stroke-width","3"],
-		     ["points",data.datastring]]
-	attrs.map(function(x) {$('#line').attr(x[0],x[1]);});
+	// Clear the previous plot
+	svg.select("path").remove()
+
+	var lineGraph = svg.append("path")
+	    .attr("d",lineFunction(points))
+	    .attr("stroke","blue")
+	    .attr("stroke-width",3)
+	    .attr("fill","none");
     };
 
     var submit_func = function() {

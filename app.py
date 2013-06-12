@@ -1,7 +1,6 @@
 #imports
 import sympy as sy
 import numpy as np
-from plot import Plot
 from sympy.parsing.sympy_parser import parse_expr
 
 from flask import Flask,render_template,request,jsonify
@@ -20,21 +19,22 @@ def drawgraph():
     except:
         return render_template('error.html')
 
-    #make a plot object
-    limits = (-20,20)
-    plotsize = (400,400)
-    offset = 50
-    
-    plot = Plot(exp,limits,plotsize,offset)
+    xmin = -20
+    xmax = 20
+    stepsize = 0.5
 
-    params = plot.svgout()
+    x = sy.Symbol('x')
     
-    return jsonify(datastring = params['datastring'],
-                   svgsize = params['svgsize'],
-                   xaxis = params['xaxis'],
-                   yaxis = params['yaxis'],
-                   word = "cats")
+    # evaluate over the range
+    points = [(i,float(exp.evalf(subs={x:i})))
+                    for i in np.arange(xmin,
+                                       xmax,
+                                       stepsize)]
 
+    return jsonify(points = points, 
+                   word = "cats",
+                   xmin = xmin,
+                   xmax = xmax)
 
 @app.route('/',methods=['POST'])
 def indexpost():

@@ -71,7 +71,34 @@ $(function() {
     // Bind the sampler data to a circle
     var i = 0 // The index we are at in the sampler data
 
-    
+    // Less verbose
+    var chain = data.chain;
+
+    // Initialize the circle
+    var circles = svg.selectAll("circle")
+      .data(chain.slice(0,1))
+    .enter().append("circle")
+      .attr("cy",height)
+      .attr("cx",function(x) {
+	return xsc(x);
+      })
+      .attr("r",10);
+
+    i++;
+    // console.log(circles);
+    // console.log(data.chain);    
+
+    var update = function() {
+      console.log(i);
+      circles.data(chain.slice(i,i+1))
+	.attr("cx",function(x) {
+	  return xsc(x);
+	});
+      i++;
+    }
+
+    // Change the circle according to the next step in the chain
+    setInterval(update,1000);
   };
 
   // Function to be called when the user submits 
@@ -91,7 +118,6 @@ $(function() {
   
   $('input').keydown(
     function (e) {
-      console.log(e);
       if (e.keyCode === 13) {
 	submit_func();
       }

@@ -1,6 +1,7 @@
 #imports
 import sympy as sy
 import numpy as np
+import emcee
 from sympy.parsing.sympy_parser import parse_expr
 
 from flask import Flask,render_template,request,jsonify
@@ -35,20 +36,40 @@ def drawgraph():
                                        xmax,
                                        stepsize)]
 
-    #compute minimum for the sampler
+    #compute minimum/maximum for the sampler
     ymin = min(zip(*points)[1])
+    ymax = max(zip(*points)[1])
+    yrange = ymax - ymin
+
+    # guess a reasonable variance
+    var = (xmax-xmin)/10
     
     # use emcee to sample the distribution
 
-    def lnprobfxn(x):
-        return np.log(float(exp.evalf(subs={x:i})) - ymin)
-
+    numsamples = 1000; # number of samples to take
     
+    def lnprobfn(xarg):
+        if xarg[0] > xmax or xarg[0] < xmin:
+            print "out"
+            return -np.inf
+        res = float(exp.evalf(subs={x:float(xarg[0])}))
+        return np.log( 1/((res - ymin)**2) )
+        
+
+    sampler = emcee.MHSampler([[var,var],[var,var]], #cov
+                              2, #dim
+                              lnprobfn)
+
+    res = sampler.run_mcmc([6,6],numsamples)
+
+    chain = zip(*sampler.chain)[0]
     
     return jsonify(points = points, 
                    word = "jQuery",
                    xmin = xmin,
-                   xmax = xmax)
+                   xmax = xmax,
+                   chain = chain,
+                   numsamples = numsamples)
 
 @app.route('/',methods=['POST'])
 def indexpost():

@@ -17,11 +17,15 @@ def drawgraph():
     try:
         exp = parse_expr(request.args.get('eq',type=str))
     except:
-        return render_template('error.html')
+        return jsonify(error = "parse error")
 
-    xmin = -20
-    xmax = 20
-    stepsize = 0.5
+    xmin = request.args.get('minx',type=float)
+    xmax = request.args.get('maxx',type=float)
+
+    if xmin >= xmax:
+        return jsonify(error = "invalid range")
+    
+    stepsize = (xmax - xmin) / 1000
 
     x = sy.Symbol('x')
     
@@ -32,7 +36,7 @@ def drawgraph():
                                        stepsize)]
 
     return jsonify(points = points, 
-                   word = "cats",
+                   word = "jQuery",
                    xmin = xmin,
                    xmax = xmax)
 

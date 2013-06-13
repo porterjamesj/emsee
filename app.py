@@ -35,6 +35,16 @@ def drawgraph():
                                        xmax,
                                        stepsize)]
 
+    #compute minimum for the sampler
+    ymin = min(zip(*points)[1])
+    
+    # use emcee to sample the distribution
+
+    def lnprobfxn(x):
+        return np.log(float(exp.evalf(subs={x:i})) - ymin)
+
+    
+    
     return jsonify(points = points, 
                    word = "jQuery",
                    xmin = xmin,

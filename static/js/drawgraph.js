@@ -8,12 +8,12 @@ $(function() {
 	      d3.select("body").select("svg").remove();
         
         // Parameters for the svg canvas
-        var swidth = 500;
+        var swidth = 600;
         var sheight = 500;
 
-        var margin = {top: 50, right: 50, bottom: 50, left: 50};
-        var width = 500 - margin.left - margin.right;
-        var height = 500 - margin.top - margin.bottom;
+        var margin = {top: 80, right: 80, bottom: 80, left: 80};
+        var width = swidth - margin.left - margin.right;
+        var height = sheight - margin.top - margin.bottom;
 
         // Make an svg to draw the plot on
         d3.select("body").append("svg")
@@ -87,7 +87,7 @@ $(function() {
     //Bind clicking and keydown to submit the data to the server
     $('a#submit').click(submit_func);
     
-    $('input[name="equation"]').keydown(
+    $('input').keydown(
 	      function (e) {
             console.log(e);
 	          if (e.keyCode === 13) {

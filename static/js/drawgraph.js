@@ -83,19 +83,21 @@ $(function() {
 	return xsc(x);
       })
       .attr("r",10);
-
+    
     i++;
     // console.log(circles);
     // console.log(data.chain);    
 
     var update = function() {
       console.log(i);
-      circles.data(chain.slice(i,i+1))
-	.attr("cx",function(x) {
-	  return xsc(x);
-	});
+      circles.data(chain.slice(i,i+1));
+      circles.transition()
+      .attr("cx",
+	    function(x) {
+	      return xsc(x);
+	    });
       i++;
-    }
+    };
 
     // Change the circle according to the next step in the chain
     setInterval(update,500);

@@ -98,7 +98,7 @@ $(function() {
     }
 
     // Change the circle according to the next step in the chain
-    setInterval(update,1000);
+    setInterval(update,500);
   };
 
   // Function to be called when the user submits 

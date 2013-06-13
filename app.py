@@ -60,7 +60,8 @@ def drawgraph():
                               2, #dim
                               lnprobfn)
 
-    res = sampler.run_mcmc([6,6],numsamples)
+    initval = (np.random.random() * (xmax-xmin) - abs(xmin))
+    res = sampler.run_mcmc([initval,initval],numsamples)
 
     chain = zip(*sampler.chain)[0]
     

@@ -1,5 +1,5 @@
 $(function() {    
-
+  var cancel = false;
   // Callback function when the getJSON call returns, draws the svg.
   var callback = function(data) {	
 
@@ -89,22 +89,30 @@ $(function() {
     // console.log(data.chain);    
 
     var update = function() {
-      console.log(i);
-      circles.data(chain.slice(i,i+1));
-      circles.transition()
-      .attr("cx",
-	    function(x) {
-	      return xsc(x);
-	    });
-      i++;
+      if(cancel === false && i < chain.length){
+	console.log(i);
+	circles.data(chain.slice(i,i+1));
+	circles.transition()
+	  .attr("cx",
+		function(x) {
+		  return xsc(x);
+		});
+	i++;
+	setTimeout(update,500);
+	} else {
+	  cancel = false;
+	  return;
+	} 
     };
-
-    // Change the circle according to the next step in the chain
-    setInterval(update,500);
+    update();
   };
 
   // Function to be called when the user submits 
   var submit_func = function() {
+    if($("svg").length > 0) {
+      cancel = true;
+    }
+
     $.getJSON($SCRIPT_ROOT + '/drawgraph',
 	      /* The address to which we will send the request. */
 	      {eq: $('input[name="equation"]').val(),

@@ -42,7 +42,7 @@ $(function() {
 
     // Make a color scale
     var colorsc = d3.scale.linear()
-      .domain([0,data.ys.length])
+      .domain([0,levels.length])
       .range(["#fff", "red"]);
 
     // the grid function
@@ -65,8 +65,8 @@ $(function() {
 
     // generate contour lines
     var conLine = d3.svg.line()
-      .x(function(d) { console.log(d); return xsc(d[0]); })
-      .y(function(d) { console.log(d); return ysc(d[1]); })
+      .x(function(d) { return xsc(d[0]); })
+      .y(function(d) { return ysc(d[1]); })
       .interpolate("linear");
     
     var svg = d3.select("g#plot");
@@ -76,8 +76,8 @@ $(function() {
       .enter().append("path")
       .datum(function(d) { return d3.geom.contour(d); })
       .attr("class","isoline")
-      .attr("fill","none")//function (d) {return colorsc(d[1]); })
-      .attr("stroke","black")
+      .attr("stroke","none")
+      .attr("fill",function (d,i) { return colorsc(i); })
       .attr("d",conLine);
   };
 

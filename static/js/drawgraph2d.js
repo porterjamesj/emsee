@@ -1,7 +1,83 @@
+// fooling around with d3.geom.contour
+
+var mygrid = function(x,y) {
+  if(x > 30 && x < 50 && y > 30 && y < 50) {
+    return true;
+  }
+  else {
+    return false;
+  }
+};
+
 $(function() { 
 
   var callback = function(data) {
     console.log(data);
+
+    // Clear the previous plot
+    d3.select("body").select("svg").remove();
+    
+    // Parameters for the svg canvas
+    var swidth = 600;
+    var sheight = 500;
+
+    var margin = {top: 80, right: 80, bottom: 80, left: 80};
+    var width = swidth - margin.left - margin.right;
+    var height = sheight - margin.top - margin.bottom;
+
+    // Make an svg to draw the plot on
+    d3.select("body").append("svg")
+      .attr("width",swidth)
+      .attr("height",sheight)
+      .append("svg:g")
+      .attr("id","plot")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var zs = data.zs;
+
+    // Dynamically generate the isoline levels
+    var levels = d3.range(data.zmin,data.zmax,(data.zmax-data.zmin)/10)
+
+    console.log(levels);
+
+    // Make a color scale
+    var colorsc = d3.scale.linear()
+      .domain(levels)
+      .range(["#fff", "red"]);
+
+    // the grid function
+    var isoline = function(min) {
+      return function(x,y) {
+	console.log(y);
+	return x >=0 && y >=0 && 
+	  x <= data.xs.length-1 && y <= data.ys.length-1
+	  && zs[y][x] >= min;
+      };
+    };
+
+    var funcs = levels.map(isoline)
+    console.log(funcs);
+
+    // transforms a point in grid space into a point in svg space
+    var transform = function(point) {
+      return [point[0] * width / xs.length, point[1] * height / ys.length];
+    };
+    
+    // generate contour lines
+    var conLine = d3.svg.line()
+      .interpolate("linear");
+    
+    var svg = d3.select("g#plot");
+    
+    svg.selectAll(".isoline")
+      .data(levels.map(isoline)) // each datum is the grid function for this level
+      .enter().append("path")
+      .datum(function(d) {
+	console.log(d);
+	return d3.geom.contour(d);
+      })
+      .attr("class","isoline")
+      .attr("d",conLine);
   };
 
   var submit_func = function() {

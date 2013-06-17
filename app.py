@@ -18,6 +18,8 @@ def indexget():
 
 @app.route('/drawgraph2d')
 def drawgraph2d():
+    data = {}
+
     # use sympy to parse the equation into something we can evaluate
     try:
         exp = parse_expr(request.args.get('eq',type=str))
@@ -36,18 +38,26 @@ def drawgraph2d():
     x = sy.Symbol('x')
     y = sy.Symbol('y')
 
+    data['xs'] = list(np.arange(xmin, xmax, stepsizex))
+    data['ys'] = list(np.arange(ymin, ymax, stepsizey))
+
+    
     try:
-        points = [[(i,j,float(exp.evalf(subs={x:i,y:j})))
-                   for i in np.arange(xmin, xmax, stepsizex)]
-                   for j in np.arange(ymin, ymax, stepsizey)]
+        data['zs'] = [[float(exp.evalf(subs={x:i,y:j}))
+                           for i in data['xs']]
+                           for j in data['ys']]
     except Exception as err:
         return jsonify(error = str(err))
 
-    return jsonify(points = points)
+    # extract min and max z value
+    data['zmin'] = min([min(row) for row in data['zs']])
+    data['zmax'] = max([max(row) for row in data['zs']])
+    
+    return jsonify(**data)
     
 @app.route('/drawgraph')
 def drawgraph():
-    # use sympy to parse the equation into something we can evaluate
+    # use sympy to parse Theh equation into something we can evaluate
     try:
         exp = parse_expr(request.args.get('eq',type=str))
     except:
@@ -70,7 +80,8 @@ def drawgraph():
                                        xmax,
                                        stepsize)]
     except:
-        return jsonify(error = "evalf error")    
+        return jsonify(error = "evalf error")
+
     #compute minimum/maximum for the sampler
     ymin = min(zip(*points)[1])
     ymax = max(zip(*points)[1])

@@ -1,7 +1,26 @@
 $(function() {    
   var cancel = false;
+  $("#error").hide() // hide the error div unless it's needed
   // Callback function when the getJSON call returns, draws the svg.
   var callback = function(data) {	
+    
+    // Add some error handling
+    var errmsg;
+    if(data.error) {
+      if(data.error === "parse error") {
+	errmsg = "Sorry, couldn't parse that"
+      } else if(data.error === "evalf error") {
+	errmsg = "Error while evaluating, probably a complex result."
+      } else if(data.error === "invalid range") {
+	errmsg = "invalid range!"
+      }
+      $("#error").text(errmsg)
+	.fadeIn(400)
+	.delay(400)
+	.fadeOut(400);
+      cancel = false; // So the next plot works
+      return;
+    }
 
     // Clear the previous plot
     d3.select("body").select("svg").remove();
@@ -91,8 +110,8 @@ $(function() {
     var update = function() {
       if(cancel === false && i < chain.length){
 	console.log(i);
-	circles.data(chain.slice(i,i+1));
-	circles.transition()
+	circles.data(chain.slice(i,i+1))
+	  .transition()
 	  .attr("cx",
 		function(x) {
 		  return xsc(x);
@@ -109,7 +128,8 @@ $(function() {
 
   // Function to be called when the user submits 
   var submit_func = function() {
-    if($("svg").length > 0) {
+    if($("svg").length > 0) { 
+      // if there is already an svg drawn, cancel the previous updater 
       cancel = true;
     }
 

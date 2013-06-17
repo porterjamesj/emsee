@@ -11,7 +11,6 @@ app = Flask(__name__)
 def indexget():
     return render_template('index.html')
 
-
 @app.route('/drawgraph')
 def drawgraph():
     # use sympy to parse the equation into something we can evaluate
@@ -31,26 +30,29 @@ def drawgraph():
     x = sy.Symbol('x')
     
     # evaluate over the range
-    points = [(i,float(exp.evalf(subs={x:i})))
+    try:
+        points = [(i,float(exp.evalf(subs={x:i})))
                     for i in np.arange(xmin,
                                        xmax,
                                        stepsize)]
+    except:
+        return jsonify(error = "evalf error")    
 
     #compute minimum/maximum for the sampler
     ymin = min(zip(*points)[1])
     ymax = max(zip(*points)[1])
     yrange = ymax - ymin
+    
+    # use emcee to sample the distribution
 
     # guess a reasonable variance
     var = (xmax-xmin)/10
     
-    # use emcee to sample the distribution
-
     numsamples = 1000; # number of samples to take
     
     def lnprobfn(xarg):
         if xarg[0] > xmax or xarg[0] < xmin:
-            print "out"
+            # We are outside the acceptable range, probability = 0
             return -np.inf
         res = float(exp.evalf(subs={x:float(xarg[0])}))
         return np.log( 1/((res - ymin)**2) )
@@ -60,9 +62,9 @@ def drawgraph():
                               2, #dim
                               lnprobfn)
 
-    initval = (np.random.random() * (xmax-xmin) - abs(xmin))
+    initval = float(np.random.uniform(xmin,xmax,1))
     res = sampler.run_mcmc([initval,initval],numsamples)
-
+    
     chain = zip(*sampler.chain)[0]
     
     return jsonify(points = points, 

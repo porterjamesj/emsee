@@ -36,35 +36,37 @@ $(function() {
     var zs = data.zs;
 
     // Dynamically generate the isoline levels
-    var levels = d3.range(data.zmin,data.zmax,(data.zmax-data.zmin)/10)
+    var levels = d3.range(data.zmin,data.zmax,(data.zmax-data.zmin)/20)
 
     console.log(levels);
 
     // Make a color scale
     var colorsc = d3.scale.linear()
-      .domain(levels)
+      .domain([0,data.ys.length])
       .range(["#fff", "red"]);
 
     // the grid function
     var isoline = function(min) {
       return function(x,y) {
-	console.log(y);
 	return x >=0 && y >=0 && 
 	  x <= data.xs.length-1 && y <= data.ys.length-1
 	  && zs[y][x] >= min;
       };
     };
-
-    var funcs = levels.map(isoline)
-    console.log(funcs);
-
-    // transforms a point in grid space into a point in svg space
-    var transform = function(point) {
-      return [point[0] * width / xs.length, point[1] * height / ys.length];
-    };
     
+    // Scales to map from grid space onto svg space
+    var xsc = d3.scale.linear()
+      .domain([0,data.xs.length])
+      .range([0,width]);
+
+    var ysc = d3.scale.linear()
+      .domain([0,data.ys.length])
+      .range([height,0]);
+
     // generate contour lines
     var conLine = d3.svg.line()
+      .x(function(d) { console.log(d); return xsc(d[0]); })
+      .y(function(d) { console.log(d); return ysc(d[1]); })
       .interpolate("linear");
     
     var svg = d3.select("g#plot");
@@ -72,11 +74,10 @@ $(function() {
     svg.selectAll(".isoline")
       .data(levels.map(isoline)) // each datum is the grid function for this level
       .enter().append("path")
-      .datum(function(d) {
-	console.log(d);
-	return d3.geom.contour(d);
-      })
+      .datum(function(d) { return d3.geom.contour(d); })
       .attr("class","isoline")
+      .attr("fill","none")//function (d) {return colorsc(d[1]); })
+      .attr("stroke","black")
       .attr("d",conLine);
   };
 

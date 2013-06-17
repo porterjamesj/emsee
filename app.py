@@ -1,4 +1,5 @@
 #imports
+from __future__ import division
 import sympy as sy
 import numpy as np
 import emcee
@@ -11,6 +12,39 @@ app = Flask(__name__)
 def indexget():
     return render_template('index.html')
 
+@app.route('/2d',methods=['GET'])
+def indexget():
+    return render_template('index2d.html')
+
+@app.route('/drawgraph2d')
+def drawgraph2d():
+    # use sympy to parse the equation into something we can evaluate
+    try:
+        exp = parse_expr(request.args.get('eq',type=str))
+    except:
+        return jsonify(error = "parse error")
+
+    xmin = request.args.get('minx',type=float)
+    xmax = request.args.get('maxx',type=float)
+    ymin = request.args.get('miny',type=float)
+    ymax = request.args.get('maxy',type=float)
+
+    stepsizex = (xmax - xmin)/100
+    stepsizey = (ymax - ymin)/100
+
+    # symbols for sympy
+    x = sy.Symbol('x')
+    y = sy.Symbol('y')
+
+    try:
+        points = [[(i,j,float(exp.evalf(subs={x:i,y:j})))
+                   for i in np.arange(xmin, xmax, stepsizex)]
+                   for j in np.arange(ymin, ymax, stepsizey)]
+    except Exception as err:
+        return jsonify(error = str(err))
+
+    return jsonify(points = points)
+    
 @app.route('/drawgraph')
 def drawgraph():
     # use sympy to parse the equation into something we can evaluate
@@ -37,7 +71,6 @@ def drawgraph():
                                        stepsize)]
     except:
         return jsonify(error = "evalf error")    
-
     #compute minimum/maximum for the sampler
     ymin = min(zip(*points)[1])
     ymax = max(zip(*points)[1])
@@ -67,7 +100,7 @@ def drawgraph():
     
     chain = zip(*sampler.chain)[0]
     
-    return jsonify(points = points, 
+    return jsonify(points = points,
                    word = "jQuery",
                    xmin = xmin,
                    xmax = xmax,

@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<script src="{{ url_for('static',filename='js/drawgraph2d.js') }}"></script>
+<script src="{{ url_for('static',filename='js/conrec.js') }}"></script>
+<body>
+  <h1> Two dimensions </h1>
+
+  <p> Enter an equation in terms of x and y and I'll try to minimize it for you </p>
+  
+  <input type="text" name="equation" value="x + y"/>
+  <input type="text" name="minx" value="-10"/>
+  <input type="text" name="maxx" value="10"/>
+  <input type="text" name="miny" value="-10"/>
+  <input type="text" name="maxy" value="10"/>
+
+  <a href="#" id="submit">submit equation</a>
+  <p id="error"></p>
+
+ {# Plot will go here #}
+
+</body>
+
+{% endblock %}

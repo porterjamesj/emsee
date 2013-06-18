@@ -43,7 +43,7 @@ $(function() {
     // Make a color scale
     var colorsc = d3.scale.linear()
       .domain([0,levels.length])
-      .range(["#fff", "red"]);
+      .range(["blue", "red"]);
 
     // the grid function
     var isoline = function(min) {

@@ -60,7 +60,7 @@ def drawgraph2d():
     # guess resonable covariance matrix
     xvar = (xmax-xmin)/10
     yvar = (ymax-ymin)/10
-    cov = np.array([[xvar,xvar],[yvar,yvar]])
+    cov = np.array([[xvar,0],[0,yvar]])
 
     numsamples = 1000
 

@@ -26,10 +26,10 @@ def drawgraph2d():
     except:
         return jsonify(error = "parse error")
 
-    xmin = request.args.get('minx',type=float)
-    xmax = request.args.get('maxx',type=float)
-    ymin = request.args.get('miny',type=float)
-    ymax = request.args.get('maxy',type=float)
+    data['xmin']= xmin = request.args.get('minx',type=float)
+    data['xmax']= xmax = request.args.get('maxx',type=float)
+    data['ymin']= ymin = request.args.get('miny',type=float)
+    data['ymax']= ymax = request.args.get('maxy',type=float)
 
     stepsizex = (xmax - xmin)/100
     stepsizey = (ymax - ymin)/100
@@ -40,7 +40,6 @@ def drawgraph2d():
 
     data['xs'] = list(np.arange(xmin, xmax, stepsizex))
     data['ys'] = list(np.arange(ymin, ymax, stepsizey))
-
     
     try:
         data['zs'] = [[float(exp.evalf(subs={x:i,y:j}))
@@ -57,7 +56,7 @@ def drawgraph2d():
     
 @app.route('/drawgraph')
 def drawgraph():
-    # use sympy to parse Theh equation into something we can evaluate
+    # use sympy to parse The equation into something we can evaluate
     try:
         exp = parse_expr(request.args.get('eq',type=str))
     except:

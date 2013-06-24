@@ -1,14 +1,3 @@
-// fooling around with d3.geom.contour
-
-var mygrid = function(x,y) {
-  if(x > 30 && x < 50 && y > 30 && y < 50) {
-    return true;
-  }
-  else {
-    return false;
-  }
-};
-
 $(function() { 
 
   var callback = function(data) {
@@ -43,7 +32,8 @@ $(function() {
     // Make a color scale
     var colorsc = d3.scale.linear()
       .domain([0,levels.length])
-      .range(["blue", "red"]);
+      .range(["blue", "red"])
+      .interpolate(d3.interpolateLab);
 
     // the grid function
     var isoline = function(min) {
@@ -69,16 +59,50 @@ $(function() {
       .y(function(d) { return ysc(d[1]); })
       .interpolate("linear");
     
+    // Axes
+    var xAxis = d3.svg.axis()
+      .scale(d3.scale.linear()
+	     .domain([data.xmin,data.xmax])
+	     .range([0,width]))
+      .orient("bottom")
+      .ticks(5);
+
+    var yAxis = d3.svg.axis()
+      .scale(d3.scale.linear()
+	     .domain([data.ymin,data.ymax])
+	     .range([height,0]))
+      .orient("left")
+      .ticks(5);
+
     var svg = d3.select("g#plot");
     
+    /* Function to determine random starting point for the marching squares
+     * algorithm. */
+    var randStart = function(data) {
+      xpos = 1;
+      ypos = 1;
+      return [xpos,ypos];
+    }
+
+    // draw contour lines
     svg.selectAll(".isoline")
       .data(levels.map(isoline)) // each datum is the grid function for this level
       .enter().append("path")
-      .datum(function(d) { return d3.geom.contour(d); })
+      .datum(function(d) { return d3.geom.contour(d);})
       .attr("class","isoline")
-      .attr("stroke","none")
+      .attr("stroke","black")
       .attr("fill",function (d,i) { return colorsc(i); })
       .attr("d",conLine);
+    
+    // Add axes
+    svg.append("svg:g")
+      .attr("transform","translate(0," + height + ")")
+      .attr("class","x axis")
+      .call(xAxis);
+
+    svg.append("svg:g")
+      .attr("class","y axis")
+      .call(yAxis);
   };
 
   var submit_func = function() {

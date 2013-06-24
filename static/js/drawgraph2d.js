@@ -24,11 +24,9 @@ $(function() {
 
     var zs = data.zs;
 
-    console.log(levels);
-
     // Add a "cliff" so that paths fill correctly
 
-    var cliff = -1000;
+    var cliff = data.zmin-Math.abs(1000*data.zmax);
     data.zs.push(d3.range(data.zs[0].length).map(function() { return cliff; }));
     data.zs.unshift(d3.range(data.zs[0].length).map(function() { return cliff; }));
     data.zs.forEach(function(d) {
@@ -49,8 +47,8 @@ $(function() {
 
     // Make a color scale
     var colorsc = d3.scale.linear()
-      .domain([0,levels.length])
-      .range(["blue", "red"])
+      .domain([data.zmin, data.zmax])
+      .range(["blue", "yellow"])
       .interpolate(d3.interpolateLab);
 
     // Scales to map from grid space onto svg space
@@ -61,12 +59,6 @@ $(function() {
     var ysc = d3.scale.linear()
       .domain([0,data.ys.length])
       .range([height,0]);
-
-    // generate contour lines
-    var conLine = d3.svg.line()
-      .x(function(d) { return xsc(d[0]); })
-      .y(function(d) { return ysc(d[1]); })
-      .interpolate("linear");
     
     // Axes
     var xAxis = d3.svg.axis()
@@ -94,6 +86,7 @@ $(function() {
       .attr("fill",function(d) { return colorsc(d.level); })
       .attr("stroke","black");
 
+    // TODO: Add an area calculation, order path elements by area
     
     // Add axes
     svg.append("svg:g")

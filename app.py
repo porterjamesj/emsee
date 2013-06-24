@@ -46,8 +46,8 @@ def drawgraph2d():
     
     try:
         data['zs'] = [[float(exp.evalf(subs={x:i,y:j}))
-                           for i in data['xs']]
                            for j in data['ys']]
+                           for i in data['xs']]
     except Exception as err:
         return jsonify(error = str(err))
 

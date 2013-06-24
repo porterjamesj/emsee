@@ -97,6 +97,9 @@ $(function() {
     svg.append("svg:g")
       .attr("class","y axis")
       .call(yAxis);
+
+    // Plot the Markov chain
+
   };
 
   var submit_func = function() {

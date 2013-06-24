@@ -54,6 +54,31 @@ def drawgraph2d():
     # extract min and max z value
     data['zmin'] = min([min(row) for row in data['zs']])
     data['zmax'] = max([max(row) for row in data['zs']])
+
+    # sample the distribution
+
+    # guess resonable covariance matrix
+    xvar = (xmax-xmin)/10
+    yvar = (ymax-ymin)/10
+    cov = np.array([[xvar,xvar],[yvar,yvar]])
+
+    numsamples = 1000
+
+    def lnprobfn(state):
+        if state[0] > xmax or state[0] < xmin or state[1] > ymax or state[1] < ymin:
+            return -np.inf
+        res = float(exp.evalf(subs={x:float(state[0]),y:float(state[1])}))
+        return np.log( 1/((res-data['zmin'])**2) )
+
+    sampler = emcee.MHSampler(cov, 2, lnprobfn)
+
+    initstate = np.concatenate((
+        np.random.uniform(xmin,xmax,1),
+        np.random.uniform(ymin,ymax,1)
+        ))
+
+    res = sampler.run_mcmc(initstate,numsamples)
+    data['chain'] = sampler.chain.tolist()
     
     return jsonify(**data)
     

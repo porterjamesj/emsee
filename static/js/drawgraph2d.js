@@ -24,10 +24,28 @@ $(function() {
 
     var zs = data.zs;
 
-    // Dynamically generate the isoline levels
-    var levels = d3.range(data.zmin,data.zmax,(data.zmax-data.zmin)/20)
-
     console.log(levels);
+
+    // Add a "cliff" so that paths fill correctly
+
+    var cliff = -1000;
+    data.zs.push(d3.range(data.zs[0].length).map(function() { return cliff; }));
+    data.zs.unshift(d3.range(data.zs[0].length).map(function() { return cliff; }));
+    data.zs.forEach(function(d) {
+      d.push(cliff);
+      d.unshift(cliff);
+    });
+
+    // Now do contouring
+    var c = new Conrec();
+    var xs = d3.range(0, data.zs[0].length);
+    var ys = d3.range(0, data.zs.length);
+    var zstepsize = (data.zmax-data.zmin) / 15;
+    var levels = d3.range(data.zmin, data.zmax, zstepsize);
+    
+    c.contour(data.zs, 0, xs.length-1, 0, ys.length-1, xs, ys, levels.length, levels); 
+
+    console.log(c.contourList());
 
     // Make a color scale
     var colorsc = d3.scale.linear()
@@ -35,15 +53,6 @@ $(function() {
       .range(["blue", "red"])
       .interpolate(d3.interpolateLab);
 
-    // the grid function
-    var isoline = function(min) {
-      return function(x,y) {
-	return x >=0 && y >=0 && 
-	  x <= data.xs.length-1 && y <= data.ys.length-1
-	  && zs[y][x] >= min;
-      };
-    };
-    
     // Scales to map from grid space onto svg space
     var xsc = d3.scale.linear()
       .domain([0,data.xs.length])
@@ -75,24 +84,16 @@ $(function() {
       .ticks(5);
 
     var svg = d3.select("g#plot");
-    
-    /* Function to determine random starting point for the marching squares
-     * algorithm. */
-    var randStart = function(data) {
-      xpos = 1;
-      ypos = 1;
-      return [xpos,ypos];
-    }
 
-    // draw contour lines
-    svg.selectAll(".isoline")
-      .data(levels.map(isoline)) // each datum is the grid function for this level
-      .enter().append("path")
-      .datum(function(d) { return d3.geom.contour(d);})
-      .attr("class","isoline")
-      .attr("stroke","black")
-      .attr("fill",function (d,i) { return colorsc(i); })
-      .attr("d",conLine);
+    // Draw contours
+    svg.selectAll("path").data(c.contourList())
+      .enter().append("svg:path")
+      .attr("d",d3.svg.line()
+	    .x(function(d) { return xsc(d.x); })
+	    .y(function(d) { return ysc(d.y); }))
+      .attr("fill",function(d) { return colorsc(d.level); })
+      .attr("stroke","black");
+
     
     // Add axes
     svg.append("svg:g")

@@ -31,8 +31,11 @@ def drawgraph2d():
     data['ymin']= ymin = request.args.get('miny',type=float)
     data['ymax']= ymax = request.args.get('maxy',type=float)
 
-    stepsizex = (xmax - xmin)/100
-    stepsizey = (ymax - ymin)/100
+    data['xsteps'] = 100
+    data['ysteps'] = 100
+    
+    stepsizex = (xmax - xmin)/data['xsteps']
+    stepsizey = (ymax - ymin)/data['ysteps']
 
     # symbols for sympy
     x = sy.Symbol('x')

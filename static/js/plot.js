@@ -25,11 +25,46 @@ Plot.prototype.animateChain = function() {
   // Counter for chain step
   var i = 1
   // Initialize circle
-  var circle = svg.selectAll("circle")
-    .data(chain.slice(0,1))
+  var self = this;
+
+  var circle = this.svg.selectAll("circle")
+    .data(self.chain.slice(0,1))
     .enter().append("circle")
-    .attr("cx", function(d) { return fxsc(d[0]); })
     .attr("r",10);
+
+  // Initialize circle location
+  if(self.constructor === TwoDeePlot) { // This is a TwoDeePlot
+    circle
+      .attr("cx", function(d) { return self.fxsc(d[0]); })
+      .attr("cy", function(d) { return self.fysc(d[1]); });
+  } else { // This is a OneDeePlot
+    circle
+      .attr("cx", function(d) { return self.fxsc(d); })
+      .attr("cy", this.height);
+  }
+
+  var update = function() {
+    console.log(i);
+    if (i < self.chain.length) {
+      circle.data(self.chain.slice(i,i+1))
+      if(self.constructor === TwoDeePlot) { // This is a TwoDeePlot
+	circle
+	  .transition()
+	  .attr("cx", function(d) { console.log(d); 
+				    console.log(self.fxsc(d[0]));
+				    return self.fxsc(d[0]); })
+	  .attr("cy", function(d) { return self.fysc(d[1]); });
+      } else { // This is a OneDeePlot
+	circle
+	  .transition()
+	  .attr("cx", function(d) { return self.fxsc(d); })
+      }
+      i++; 
+    }
+    setTimeout(update,500);
+  };
+
+  setTimeout(update,500);
 };
 
 /*
@@ -52,11 +87,11 @@ OneDeePlot.prototype.constructor = OneDeePlot
  * Make scales to map from function space into svg space
  */
 OneDeePlot.prototype.makeScales = function() {
-  this.xsc = d3.scale.linear()
+  this.fxsc = d3.scale.linear()
     .domain([this.xmin,this.xmax])
     .range([0,this.width]);
   
-  this.ysc = d3.scale.linear()
+  this.fysc = d3.scale.linear()
     .domain([d3.min(_.pluck(points,1)),d3.max(_.pluck(points,1))])
     .range([this.height,0]);
 };
@@ -69,8 +104,8 @@ OneDeePlot.prototype.draw = function () {
   //Actually draw the plot
   svg.append("svg:path")
     .attr("d",d3.svg.line()
-	  .x(function(d) { return this.xsc(d[0]); })
-	  .y(function(d) { return this.ysc(d[1]); })
+	  .x(function(d) { return this.fxsc(d[0]); })
+	  .y(function(d) { return this.fysc(d[1]); })
 	  .interpolate("linear"))
     .attr("class","line");
 
@@ -79,14 +114,14 @@ OneDeePlot.prototype.draw = function () {
     .attr("transform","translate(0," + height + ")")
     .attr("class","x axis")
     .call(d3.svg.axis()
-	  .scale(this.xsc)
+	  .scale(this.fxsc)
 	  .orient("bottom")
 	  .ticks(5));
 
   svg.append("svg:g")
     .attr("class","y axis")
     .call(d3.svg.axis()
-	  .scale(this.ysc)
+	  .scale(this.fysc)
 	  .orient("left")
 	  .ticks(5));
 };
@@ -123,11 +158,11 @@ TwoDeePlot.prototype.makeScales = function() {
     .interpolate(d3.interpolateLab);
 
   // Scales to map from index space onto svg space
-  this.xsc = d3.scale.linear()
+  this.ixsc = d3.scale.linear()
     .domain([0,this.zs[0].length])
     .range([0,this.width]);
 
-  this.ysc = d3.scale.linear()
+  this.iysc = d3.scale.linear()
     .domain([0,this.zs.length])
     .range([this.height,0]);
 
@@ -169,10 +204,10 @@ TwoDeePlot.prototype.draw = function() {
   this.svg.selectAll("path").data(c.contourList())
     .enter().append("svg:path")
     .attr("d",d3.svg.line()
-	  .x(function(d) { return this.xsc(d.x); }.bind(this))
-	  .y(function(d) { return this.ysc(d.y); }.bind(this))
+	  .x(function(d) { return this.ixsc(d.x); }.bind(this))
+	  .y(function(d) { return this.iysc(d.y); }.bind(this)))
     .attr("fill",function(d) { return this.colorsc(d.level); }.bind(this))
-    .attr("stroke","back");
+    .attr("stroke","black");
 
   // TODO: Add an area calculation, order path elements by area
   

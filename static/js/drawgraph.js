@@ -2,8 +2,7 @@ $(function() {
   var cancel = false;
   $("#error").hide() // hide the error div unless it's needed
   // Callback function when the getJSON call returns, draws the svg.
-  var callback = function(data) {	
-    
+  var callback = function(data) {    
     // Add some error handling
     var errmsg;
     if(data.error) {

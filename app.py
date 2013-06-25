@@ -13,13 +13,13 @@ def indexget():
     return render_template('index.html')
 
 @app.route('/2d',methods=['GET'])
-def indexget():
+def indexget2d():
     return render_template('index2d.html')
 
 @app.route('/drawgraph2d')
 def drawgraph2d():
     data = {}
-
+    
     # use sympy to parse the equation into something we can evaluate
     try:
         exp = parse_expr(request.args.get('eq',type=str))

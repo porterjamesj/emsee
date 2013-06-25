@@ -1,22 +1,52 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<script src="{{ url_for('static',filename='js/drawgraph.js') }}"></script>
+  <script src="{{ url_for('static',filename='js/drawgraph.js') }}"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <script src="{{ url_for('static',filename='js/conrec.js') }}"></script>
+  <script src="{{ url_for('static',filename='js/plot.js') }}"></script>
+  <script>
+    $(function() {
+    $( "#tabs" ).tabs();
+    });
+  </script>
+  <body>
+    <h1> emsee </h1>
 
-<body>
-  <h1> MCMC </h1>
+    <div id="tabs">
+      <ul>
+	<li><a href="#tab-onedee">One Dimension</a></li>
+	<li><a href="#tab-twodee">Two Dimensions</a></li>
+      </ul>
 
-  <p> Enter an equation in terms of x and I'll try to minimize it for you. </p>
+      <div id="tab-onedee">
+	<p> Enter an equation in terms of x and I'll try to minimize it for you. </p>
+	
+	<input class="onedee" type="text" name="equation" value="cos(x)"/>
+	<input class="onedee" type="text" name="minx" value="-10"/>
+	<input class="onedee" type="text" name="maxx" value="10"/>
+	
+	<a href="#" id="submit-onedee">submit equation</a>
+	<p id="error"></p> 
+      </div>
+      
+      <div id="tab-twodee">	
+	<p> Enter an equation in terms of x and y and I'll try to minimize it for you </p>
+	
+	<input class="twodee" type="text" name="equation"
+	       value="(1-x)**2 + 100*(y-x**2)**2"/>
+	<input class="twodee" type="text" name="minx" value="-1.5"/>
+	<input class="twodee" type="text" name="maxx" value="1.5"/>
+	<input class="twodee" type="text" name="miny" value="-0.5"/>
+	<input class="twodee" type="text" name="maxy" value="3"/>
 
-  <input type="text" name="equation" value="cos(x)">
-  <input type="text" name="minx" value="-10">
-  <input type="text" name="maxx" value="10">
+	<a href="#" id="submit-twoodee">submit equation</a>
+	<p id="error"></p>
+      </div>
+    </div>
 
-  <a href="#" id="submit">submit equation</a>
-  <p id="error"></p>
+    {# Plot will go here #}
 
-{# Plot will go here #}
-
-</body>
+  </body>
 
 {% endblock %}

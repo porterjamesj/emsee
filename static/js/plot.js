@@ -126,7 +126,6 @@ OneDeePlot.prototype.draw = function () {
 	  .ticks(5));
 };
 
-
 /*
  * Subclass for two dimensional plot
  */

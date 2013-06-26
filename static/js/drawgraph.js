@@ -42,8 +42,8 @@ $(function() {
     if(obj.attr("class") == "onedee") {
       $.getJSON($SCRIPT_ROOT + '/drawgraph',
                 {eq: $('input.onedee[name="equation"]').val(),
-                 minx: $('input.onedee[name="minx"]').val(),
-                 maxx: $('input.onedee[name="maxx"]').val()},
+                 xmin: $('input.onedee[name="xmin"]').val(),
+                 xmax: $('input.onedee[name="xmax"]').val()},
                 function (data) {callback(data,obj.attr("class"));});
     } else if(obj.attr("class") == "twodee") {
       $.getJSON($SCRIPT_ROOT + '/drawgraph2d',

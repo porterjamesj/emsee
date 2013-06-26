@@ -1,74 +1,65 @@
+$(function() {
 
-$(function() { 
+  var callback = function(data,dim) {
+    // check dims and construct the appropriate type of plot
+    if(dim === "onedee") {
+      plot = new OneDeePlot(600,500,
+                            {top: 80, right: 80, bottom: 80, left: 80},
+                            data);
+    } else if(dim === "twodee") {
+      plot = new TwoDeePlot(600,500,
+                            {top: 80, right: 80, bottom: 80, left: 80},
+                            data);
+    }
+    console.log(plot);
 
-  var drawPlot = function(plot) {    
-    // clear previous svg
-    d3.select("body").select("svg").remove();
-
-    // draw a new one
-    plot.makeSvg();
+    // Now append an svg to the correct div for whichever tab we're in
+    plot.makeSvg(d3.select("#" + dim));
     plot.makeScales();
     plot.draw();
-    
+
     // animate the sampler
     plot.animateChain()
-    
-    console.log(plot);
   }
 
-  var callbackTwoDee = function(data) {    
-    plot = new TwoDeePlot(600,500,
-			    {top: 80, right: 80, bottom: 80, left: 80},
-			    data);
-    drawPlot(plot);
-  };
+  var submit = function() {
+    var self = $(this); //enable jQuery methods
 
-  var callbackOneDee = function(data) {
-    plot = new OneDeePlot(600,500,
-			  {top: 80, right: 80, bottom: 80, left: 80},
-			  data);
-    drawPlot(plot);
-  };
+    // clear previous svg from the correct tab
+    d3.select("#" + self.attr("class")).select("svg").remove();
 
-  var submitTwoDee = function() {
-    $.getJSON($SCRIPT_ROOT + '/drawgraph2d',
-	      /* The address to which we will send the request. */
-	      {eq: $('input.twodee[name="equation"]').val(),
-               minx: $('input.twodee[name="minx"]').val(),
-               maxx: $('input.twodee[name="maxx"]').val(),
-               miny: $('input.twodee[name="miny"]').val(),
-               maxy: $('input.twodee[name="maxy"]').val()}, 
-	      /* The JS object that flask will build the request out of. */ 
-	      callbackTwoDee /* Callback function. */);
-    return false;
-  };
-
-  var submitOneDee = function() {
-    $.getJSON($SCRIPT_ROOT + '/drawgraph',
-	      /* The address to which we will send the request. */
-	      {eq: $('input.onedee[name="equation"]').val(),
-               minx: $('input.onedee[name="minx"]').val(),
-               maxx: $('input.onedee[name="maxx"]').val()},
-	      /* The JS object that flask will build the request out of. */ 
-	      callbackOneDee /* Callback function. */);
-    return false;
-  };
+    if(self.attr("class") == "onedee") {
+      $.getJSON($SCRIPT_ROOT + '/drawgraph',
+                {eq: $('input.onedee[name="equation"]').val(),
+                 minx: $('input.onedee[name="minx"]').val(),
+                 maxx: $('input.onedee[name="maxx"]').val()},
+                function (data) {callback(data,self.attr("class"));});
+    } else if(self.attr("class") == "twodee") {
+      $.getJSON($SCRIPT_ROOT + '/drawgraph2d',
+                {eq: $('input.twodee[name="equation"]').val(),
+                 minx: $('input.twodee[name="minx"]').val(),
+                 maxx: $('input.twodee[name="maxx"]').val(),
+                 miny: $('input.twodee[name="miny"]').val(),
+                 maxy: $('input.twodee[name="maxy"]').val()},
+                function (data) {callback(data,self.attr("class"));});
+    }
+  }
 
   //Bind clicking and keydown to submit the data to the server
-  $('a#submit-onedee').click(submitOneDee);
-  $('a#submit-twodee').click(submitTwoDee);
-  
+  $('a#submit').click(submit);
+  $('a#submit').click(submit);
+
   $('input.onedee').keydown(
     function (e) {
       if (e.keyCode === 13) {
-	submitOneDee();
+        submit();
       }
     });
-    
+
   $('input.twodee').keydown(
     function (e) {
       if (e.keyCode === 13) {
-	submitTwoDee();
+        submit();
       }
     });
 });

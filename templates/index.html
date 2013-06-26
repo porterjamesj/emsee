@@ -15,24 +15,24 @@
 
     <div id="tabs">
       <ul>
-	<li><a href="#tab-onedee">One Dimension</a></li>
-	<li><a href="#tab-twodee">Two Dimensions</a></li>
+	<li><a href="#onedee">One Dimension</a></li>
+	<li><a href="#twodee">Two Dimensions</a></li>
       </ul>
 
-      <div id="tab-onedee">
+      <div id="onedee">
 	<p> Enter an equation in terms of x and I'll try to minimize it for you. </p>
-	
+
 	<input class="onedee" type="text" name="equation" value="cos(x)"/>
 	<input class="onedee" type="text" name="minx" value="-10"/>
 	<input class="onedee" type="text" name="maxx" value="10"/>
-	
-	<a href="#" id="submit-onedee">submit equation</a>
-	<p id="error"></p> 
+
+	<a href="#" id="submit" class="onedee">submit equation</a>
+	<p id="error"></p>
       </div>
-      
-      <div id="tab-twodee">	
+
+      <div id="twodee">
 	<p> Enter an equation in terms of x and y and I'll try to minimize it for you </p>
-	
+
 	<input class="twodee" type="text" name="equation"
 	       value="(1-x)**2 + 100*(y-x**2)**2"/>
 	<input class="twodee" type="text" name="minx" value="-1.5"/>
@@ -40,7 +40,7 @@
 	<input class="twodee" type="text" name="miny" value="-0.5"/>
 	<input class="twodee" type="text" name="maxy" value="3"/>
 
-	<a href="#" id="submit-twoodee">submit equation</a>
+	<a href="#" id="submit" class="twodee">submit equation</a>
 	<p id="error"></p>
       </div>
     </div>

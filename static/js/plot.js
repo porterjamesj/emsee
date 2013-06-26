@@ -3,22 +3,22 @@ var Plot = function(swidth,sheight,margin) {
   this.sheight = sheight;
   this.margin = margin;
   this.width = swidth - margin.left - margin.right;
-  this.height = sheight - margin.top - margin.bottom; 
+  this.height = sheight - margin.top - margin.bottom;
 };
 
-/* 
+/*
  * Append an svg on which to draw the plot.
  */
-Plot.prototype.makeSvg = function() {
-  d3.select("body").append("svg")
+Plot.prototype.makeSvg = function(element) {
+  element.append("svg")
     .attr("width",this.swidth)
     .attr("height",this.sheight)
     .append("svg:g")
     .attr("id","plot")
     .attr("transform",
-	  "translate(" + this.margin.left + "," + this.margin.top  + ")");
+          "translate(" + this.margin.left + "," + this.margin.top  + ")");
 
-  this.svg = d3.select("g#plot");
+  this.svg = element.select("g#plot");
 };
 
 Plot.prototype.animateChain = function() {
@@ -48,18 +48,18 @@ Plot.prototype.animateChain = function() {
     if (i < self.chain.length) {
       circle.data(self.chain.slice(i,i+1))
       if(self.constructor === TwoDeePlot) { // This is a TwoDeePlot
-	circle
-	  .transition()
-	  .attr("cx", function(d) { console.log(d); 
-				    console.log(self.fxsc(d[0]));
-				    return self.fxsc(d[0]); })
-	  .attr("cy", function(d) { return self.fysc(d[1]); });
+        circle
+          .transition()
+          .attr("cx", function(d) { console.log(d);
+                                    console.log(self.fxsc(d[0]));
+                                    return self.fxsc(d[0]); })
+          .attr("cy", function(d) { return self.fysc(d[1]); });
       } else { // This is a OneDeePlot
-	circle
-	  .transition()
-	  .attr("cx", function(d) { return self.fxsc(d); })
+        circle
+          .transition()
+          .attr("cx", function(d) { return self.fxsc(d); })
       }
-      i++; 
+      i++;
     }
     setTimeout(update,500);
   };
@@ -82,14 +82,14 @@ OneDeePlot.prototype = Object.create(Plot.prototype);
 // Correct constructor
 OneDeePlot.prototype.constructor = OneDeePlot
 
-/* 
+/*
  * Make scales to map from function space into svg space
  */
 OneDeePlot.prototype.makeScales = function() {
   this.fxsc = d3.scale.linear()
     .domain([this.xmin,this.xmax])
     .range([0,this.width]);
-  
+
   this.fysc = d3.scale.linear()
     .domain([d3.min(_.pluck(this.points,1)),d3.max(_.pluck(this.points,1))])
     .range([this.height,0]);
@@ -117,16 +117,16 @@ OneDeePlot.prototype.draw = function () {
     .attr("transform","translate(0," + self.height + ")")
     .attr("class","x axis")
     .call(d3.svg.axis()
-	  .scale(this.fxsc)
-	  .orient("bottom")
-	  .ticks(5));
+          .scale(this.fxsc)
+          .orient("bottom")
+          .ticks(5));
 
   this.svg.append("svg:g")
     .attr("class","y axis")
     .call(d3.svg.axis()
-	  .scale(this.fysc)
-	  .orient("left")
-	  .ticks(5));
+          .scale(this.fysc)
+          .orient("left")
+          .ticks(5));
 };
 
 /*
@@ -148,7 +148,7 @@ TwoDeePlot.prototype = Object.create(Plot.prototype);
 // Correct constructor
 TwoDeePlot.prototype.constructor = TwoDeePlot;
 
-/* 
+/*
  * Make scales to map from function space into svg space,
  * from "index space" into svg space, and from z to color.
  */
@@ -172,10 +172,10 @@ TwoDeePlot.prototype.makeScales = function() {
   this.fxsc = d3.scale.linear()
     .domain([this.xmin,this.xmax])
     .range([0,this.width]);
-  
+
   this.fysc = d3.scale.linear()
     .domain([this.ymin,this.ymax])
-    .range([this.height,0]);  
+    .range([this.height,0]);
 };
 
 /*
@@ -200,32 +200,32 @@ TwoDeePlot.prototype.draw = function() {
   var zstepsize = (this.zmax-this.zmin) / 15;
   var levels = d3.range(this.zmin, this.zmax, zstepsize);
 
-  c.contour(this.zs, 0, xs.length-1, 0, ys.length-1, xs, ys, levels.length, levels); 
+  c.contour(this.zs, 0, xs.length-1, 0, ys.length-1, xs, ys, levels.length, levels);
 
   //Draw contours on svg
   this.svg.selectAll("path").data(c.contourList())
     .enter().append("svg:path")
     .attr("d",d3.svg.line()
-	  .x(function(d) { return this.ixsc(d.x); }.bind(this))
-	  .y(function(d) { return this.iysc(d.y); }.bind(this)))
+          .x(function(d) { return this.ixsc(d.x); }.bind(this))
+          .y(function(d) { return this.iysc(d.y); }.bind(this)))
     .attr("fill",function(d) { return this.colorsc(d.level); }.bind(this))
     .attr("stroke","black");
 
   // TODO: Add an area calculation, order path elements by area
-  
+
   // Draw axes
   this.svg.append("svg:g")
     .attr("transform","translate(0," + this.height + ")")
     .attr("class","x axis")
     .call(d3.svg.axis()
-	   .scale(this.fxsc)
-	   .orient("bottom")
-	   .ticks(5));
+          .scale(this.fxsc)
+          .orient("bottom")
+          .ticks(5));
 
   this.svg.append("svg:g")
     .attr("class","y axis")
     .call(d3.svg.axis()
-	  .scale(this.fysc)
-	  .orient("left")
-	  .ticks(5));
+          .scale(this.fysc)
+          .orient("left")
+          .ticks(5));
 };

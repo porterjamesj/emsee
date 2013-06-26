@@ -77,8 +77,8 @@ def drawgraph2d():
 
 @app.route('/drawgraph')
 def drawgraph():
-    plot = pl.OneDeePlot(request.args.get('eq'),
-                         {i:request.args[i]
+    plot = pl.OneDeePlot(request.args.get('eq',type=str),
+                         {i:request.args.get(i,type=float)
                           for i in request.args if not i == 'eq'})
     plot.evaluate(1000)
     plot.sample(1000,10)

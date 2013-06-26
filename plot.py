@@ -8,10 +8,13 @@ from sympy.parsing.sympy_parser import parse_expr
 class Plot:
     """Generic plot class."""
     def __init__(self,eq,nums):
-        """Initialization is from the dictionary sent by jQuery."""
-        self.eq = str(eq)
+        """Initialization requires a string the represents the equation for
+        the plot, as well as the plot boudaries, which are xmin and xmax in
+        one dimension and ymin and ymax in two dimensions. The boundaries
+        are passed as a dictionary."""
+        self.eq = eq
         for key in nums:
-            setattr(self, key, float(nums[key]))
+            setattr(self, key, nums[key])
         #try to parse the given equation
         try:
             self.exp = parse_expr(str(self.eq))

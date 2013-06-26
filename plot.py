@@ -27,7 +27,7 @@ class Plot:
 
 class OneDeePlot(Plot):
     """One dimensional plot class."""
-    def evaluate(self,steps):
+    def evaluate(self,steps=1000):
         """Evaluate the given function at each of `step` points
         in the x domain."""
         stepsize = (self.xmax - self.xmin)/steps
@@ -54,10 +54,8 @@ class OneDeePlot(Plot):
         return np.log( 1/((res - self.ymin)**2) )
 
 
-    def sample(self,nsamples,vardiv):
-        """Generate a Markov chain of length `nsamples`, with the
-        posterior probability related to the difference between
-        the current position and the minimum position.
+    def sample(self,nsamples=1000,vardiv=10):
+        """Generate a Markov chain of length `nsamples`
 
         vardim controls the variance of the proposal distribution, which
         will be equal to (domain width)/(vardiv). So making this big will
@@ -79,4 +77,68 @@ class OneDeePlot(Plot):
         return {"points" : self.points,
                 "xmin" : self.xmin,
                 "xmax" : self.xmax,
+                "chain" : self.chain}
+
+class TwoDeePlot(Plot):
+    """Subclass for a two dimensional plot."""
+    def evaluate(self,xsteps=100,ysteps=100):
+        """Evaluate the plot's equation at a set of points determined
+        by the number of x and y steps passed in."""
+
+        stepsizex = (self.xmax - self.xmin)/xsteps
+        stepsizey = (self.ymax - self.ymin)/ysteps
+
+        # get list of x and y points to eval at
+        self.xs = list(np.arange(self.xmin, self.xmax, stepsizex))
+        self.ys = list(np.arange(self.ymin, self.ymax, stepsizey))
+
+        # try:
+        self.zs = [[float(self.exp.evalf(subs={sy.Symbol('x'):i,
+                                          sy.Symbol('y'):j}))
+                    for j in self.ys]
+                    for i in self.xs]
+        # except:
+            # raise RuntimeError("Evaluation failed.")
+
+        # get min and max z value
+        self.zmin = min([min(row) for row in self.zs])
+        self.zmax = max([max(row) for row in self.zs])
+
+    def __lnprobfn(self,pos):
+        """Returns theln of the posterior probability of any point
+        in the two dimensional space. This is just 1/error^2, where
+        error is the difference between f(pos) and the minimum z value."""
+        if (pos[0] > self.xmax or pos[0] < self.xmin or
+            pos[1] > self.ymax or pos[1] < self.ymin):
+            return -np.inf
+        res = float(self.exp.evalf(subs={sy.Symbol('x'):float(pos[0]),
+                                         sy.Symbol('y'):float(pos[1])}))
+        return np.log( 1/((res-self.zmin)**2) )
+
+    def sample(self,nsamples=1000,vardivx=10,vardivy=10):
+        """Generate a Markov chain of length `nsamples`"""
+        xvar = (self.xmax-self.xmin)/vardivx
+        yvar = (self.ymax-self.ymin)/vardivy
+        cov = np.array([[xvar,0],[0,yvar]])
+
+        sampler = emcee.MHSampler(cov, 2, self.__lnprobfn)
+
+        initstate = np.concatenate((
+            np.random.uniform(self.xmin,self.xmax,1),
+            np.random.uniform(self.ymin,self.ymax,1)
+        ))
+
+        res = sampler.run_mcmc(initstate,nsamples)
+
+        self.chain = sampler.chain.tolist()
+
+    def toclient(self):
+        """Package up everything we need to send to the client in a dict."""
+        return {"zs" : self.zs,
+                "xmin" : self.xmin,
+                "xmax" : self.xmax,
+                "ymin" : self.ymin,
+                "ymax" : self.ymax,
+                "zmin" : self.zmin,
+                "zmax" : self.zmax,
                 "chain" : self.chain}

@@ -48,10 +48,10 @@ $(function() {
     } else if(obj.attr("class") == "twodee") {
       $.getJSON($SCRIPT_ROOT + '/drawgraph2d',
                 {eq: $('input.twodee[name="equation"]').val(),
-                 minx: $('input.twodee[name="minx"]').val(),
-                 maxx: $('input.twodee[name="maxx"]').val(),
-                 miny: $('input.twodee[name="miny"]').val(),
-                 maxy: $('input.twodee[name="maxy"]').val()},
+                 xmin: $('input.twodee[name="xmin"]').val(),
+                 xmax: $('input.twodee[name="xmax"]').val(),
+                 ymin: $('input.twodee[name="ymin"]').val(),
+                 ymax: $('input.twodee[name="ymax"]').val()},
                 function (data) {callback(data,obj.attr("class"));});
     }
   }

@@ -1,4 +1,9 @@
 $(function() {
+  /*
+   * Callback function that runs after the server returns
+   * from the AJAX call. This is where the plot object is actually
+   * constructed and the svg drawn/animated.
+   */
   var callback = function(data,dim) {
     // check dims and construct the appropriate type of plot
     if(dim === "onedee") {
@@ -21,43 +26,52 @@ $(function() {
     plot.animateChain()
   }
 
-  var submit = function() {
-    var self = $(this); //enable jQuery methods
+  /*
+   * Function called when the user submits form data.
+   * Takes as input either a DOM element or jQuery selection
+   * to which the resulting plot should be appended.
+   */
+  var submit = function(obj) {
+    if(!(obj instanceof jQuery)) {
+      obj = $(obj);
+    }
 
     // clear previous svg from the correct tab
-    d3.select("#" + self.attr("class")).select("svg").remove();
+    d3.select("#" + obj.attr("class")).select("svg").remove();
 
-    if(self.attr("class") == "onedee") {
+    if(obj.attr("class") == "onedee") {
       $.getJSON($SCRIPT_ROOT + '/drawgraph',
                 {eq: $('input.onedee[name="equation"]').val(),
                  minx: $('input.onedee[name="minx"]').val(),
                  maxx: $('input.onedee[name="maxx"]').val()},
-                function (data) {callback(data,self.attr("class"));});
-    } else if(self.attr("class") == "twodee") {
+                function (data) {callback(data,obj.attr("class"));});
+    } else if(obj.attr("class") == "twodee") {
       $.getJSON($SCRIPT_ROOT + '/drawgraph2d',
                 {eq: $('input.twodee[name="equation"]').val(),
                  minx: $('input.twodee[name="minx"]').val(),
                  maxx: $('input.twodee[name="maxx"]').val(),
                  miny: $('input.twodee[name="miny"]').val(),
                  maxy: $('input.twodee[name="maxy"]').val()},
-                function (data) {callback(data,self.attr("class"));});
+                function (data) {callback(data,obj.attr("class"));});
     }
   }
 
-  //Bind clicking and keydown to submit the data to the server
-  $('a#submit').click(submit);
+  /*
+   * Bind clicking and keydown to submit the data to the server.
+   */
+  $('a#submit').click(function() { submit(this); });
 
   $('input.onedee').keydown(
     function (e) {
       if (e.keyCode === 13) {
-        submit();
+        submit(this);
       }
     });
 
   $('input.twodee').keydown(
     function (e) {
       if (e.keyCode === 13) {
-        submit();
+        submit(this);
       }
     });
 });

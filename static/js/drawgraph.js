@@ -1,26 +1,33 @@
 
 $(function() { 
 
-  var callback = function(data) {
-
-    // Make a new plot object
-    
-    myplot = new TwoDeePlot(600,500,
-			    {top: 80, right: 80, bottom: 80, left: 80},
-			    data);
-
+  var drawPlot = function(plot) {    
     // clear previous svg
     d3.select("body").select("svg").remove();
 
     // draw a new one
-    myplot.makeSvg();
-    myplot.makeScales();
-    myplot.draw();
+    plot.makeSvg();
+    plot.makeScales();
+    plot.draw();
     
     // animate the sampler
-    myplot.animateChain()
+    plot.animateChain()
     
-    console.log(myplot);
+    console.log(plot);
+  }
+
+  var callbackTwoDee = function(data) {    
+    plot = new TwoDeePlot(600,500,
+			    {top: 80, right: 80, bottom: 80, left: 80},
+			    data);
+    drawPlot(plot);
+  };
+
+  var callbackOneDee = function(data) {
+    plot = new OneDeePlot(600,500,
+			  {top: 80, right: 80, bottom: 80, left: 80},
+			  data);
+    drawPlot(plot);
   };
 
   var submitTwoDee = function() {
@@ -32,18 +39,18 @@ $(function() {
                miny: $('input.twodee[name="miny"]').val(),
                maxy: $('input.twodee[name="maxy"]').val()}, 
 	      /* The JS object that flask will build the request out of. */ 
-	      callback /* Callback function. */);
+	      callbackTwoDee /* Callback function. */);
     return false;
   };
 
   var submitOneDee = function() {
     $.getJSON($SCRIPT_ROOT + '/drawgraph',
 	      /* The address to which we will send the request. */
-	      {eq: $('input.onetwodee[name="equation"]').val(),
-               minx: $('input.onetwodee[name="minx"]').val(),
-               maxx: $('input.onetwodee[name="maxx"]').val()},
+	      {eq: $('input.onedee[name="equation"]').val(),
+               minx: $('input.onedee[name="minx"]').val(),
+               maxx: $('input.onedee[name="maxx"]').val()},
 	      /* The JS object that flask will build the request out of. */ 
-	      callback /* Callback function. */);
+	      callbackOneDee /* Callback function. */);
     return false;
   };
 

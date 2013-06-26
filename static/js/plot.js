@@ -70,13 +70,12 @@ Plot.prototype.animateChain = function() {
 /*
  * Subclass for a one dimensional plot
  */
-var OneDeePlot = function(swidth,shieght,margin,width,height,
-			  points,xmin,xmax,chain) {
-  Plot.call(this);
-  this.points = points;
-  this.xmin = xmin;
-  this.xmax = xmax;
-  this.chain = chain;
+var OneDeePlot = function(swidth,sheight,margin,data) {
+  Plot.call(this,swidth,sheight,margin);
+  this.points = data['points'];
+  this.xmin = data['xmin'];
+  this.xmax = data['xmax'];
+  this.chain = data['chain'];
 }
 // Inheritance
 OneDeePlot.prototype = Object.create(Plot.prototype);
@@ -92,7 +91,7 @@ OneDeePlot.prototype.makeScales = function() {
     .range([0,this.width]);
   
   this.fysc = d3.scale.linear()
-    .domain([d3.min(_.pluck(points,1)),d3.max(_.pluck(points,1))])
+    .domain([d3.min(_.pluck(this.points,1)),d3.max(_.pluck(this.points,1))])
     .range([this.height,0]);
 };
 
@@ -100,25 +99,29 @@ OneDeePlot.prototype.makeScales = function() {
  * Draw the plot on the svg
  */
 OneDeePlot.prototype.draw = function () {
-  
+
+  var self = this;
+
+  this.lineFunction = d3.svg.line()
+    .x(function(d) { return this.fxsc(d[0]); })
+    .y(function(d) { return this.fysc(d[1]); })
+    .interpolate("linear");
+
   //Actually draw the plot
-  svg.append("svg:path")
-    .attr("d",d3.svg.line()
-	  .x(function(d) { return this.fxsc(d[0]); })
-	  .y(function(d) { return this.fysc(d[1]); })
-	  .interpolate("linear"))
+  this.svg.append("svg:path")
+    .attr("d",this.lineFunction(self.points))
     .attr("class","line");
 
   // Add axes
-  svg.append("svg:g")
-    .attr("transform","translate(0," + height + ")")
+  this.svg.append("svg:g")
+    .attr("transform","translate(0," + self.height + ")")
     .attr("class","x axis")
     .call(d3.svg.axis()
 	  .scale(this.fxsc)
 	  .orient("bottom")
 	  .ticks(5));
 
-  svg.append("svg:g")
+  this.svg.append("svg:g")
     .attr("class","y axis")
     .call(d3.svg.axis()
 	  .scale(this.fysc)

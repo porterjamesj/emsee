@@ -139,11 +139,9 @@ def drawgraph():
     chain = zip(*sampler.chain)[0]
     
     return jsonify(points = points,
-                   word = "jQuery",
                    xmin = xmin,
                    xmax = xmax,
-                   chain = chain,
-                   numsamples = numsamples)
+                   chain = chain)
 
 @app.route('/',methods=['POST'])
 def indexpost():

@@ -1,5 +1,4 @@
 $(function() {
-
   var callback = function(data,dim) {
     // check dims and construct the appropriate type of plot
     if(dim === "onedee") {
@@ -46,7 +45,6 @@ $(function() {
   }
 
   //Bind clicking and keydown to submit the data to the server
-  $('a#submit').click(submit);
   $('a#submit').click(submit);
 
   $('input.onedee').keydown(

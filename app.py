@@ -12,14 +12,10 @@ app = Flask(__name__)
 def indexget():
     return render_template('index.html')
 
-@app.route('/2d',methods=['GET'])
-def indexget2d():
-    return render_template('index2d.html')
-
 @app.route('/drawgraph2d')
 def drawgraph2d():
     data = {}
-    
+
     # use sympy to parse the equation into something we can evaluate
     try:
         exp = parse_expr(request.args.get('eq',type=str))
@@ -33,7 +29,7 @@ def drawgraph2d():
 
     data['xsteps'] = 100
     data['ysteps'] = 100
-    
+
     stepsizex = (xmax - xmin)/data['xsteps']
     stepsizey = (ymax - ymin)/data['ysteps']
 
@@ -43,7 +39,7 @@ def drawgraph2d():
 
     data['xs'] = list(np.arange(xmin, xmax, stepsizex))
     data['ys'] = list(np.arange(ymin, ymax, stepsizey))
-    
+
     try:
         data['zs'] = [[float(exp.evalf(subs={x:i,y:j}))
                            for j in data['ys']]
@@ -79,9 +75,9 @@ def drawgraph2d():
 
     res = sampler.run_mcmc(initstate,numsamples)
     data['chain'] = sampler.chain.tolist()
-    
+
     return jsonify(**data)
-    
+
 @app.route('/drawgraph')
 def drawgraph():
     # use sympy to parse The equation into something we can evaluate
@@ -95,11 +91,11 @@ def drawgraph():
 
     if xmin >= xmax:
         return jsonify(error = "invalid range")
-    
+
     stepsize = (xmax - xmin) / 1000
 
     x = sy.Symbol('x')
-    
+
     # evaluate over the range
     try:
         points = [(i,float(exp.evalf(subs={x:i})))
@@ -113,21 +109,21 @@ def drawgraph():
     ymin = min(zip(*points)[1])
     ymax = max(zip(*points)[1])
     yrange = ymax - ymin
-    
+
     # use emcee to sample the distribution
 
     # guess a reasonable variance
     var = (xmax-xmin)/10
-    
+
     numsamples = 1000; # number of samples to take
-    
+
     def lnprobfn(xarg):
         if xarg[0] > xmax or xarg[0] < xmin:
             # We are outside the acceptable range, probability = 0
             return -np.inf
         res = float(exp.evalf(subs={x:float(xarg[0])}))
         return np.log( 1/((res - ymin)**2) )
-        
+
 
     sampler = emcee.MHSampler([[var,var],[var,var]], #cov
                               2, #dim
@@ -135,21 +131,13 @@ def drawgraph():
 
     initval = float(np.random.uniform(xmin,xmax,1))
     res = sampler.run_mcmc([initval,initval],numsamples)
-    
+
     chain = zip(*sampler.chain)[0]
-    
+
     return jsonify(points = points,
                    xmin = xmin,
                    xmax = xmax,
                    chain = chain)
-
-@app.route('/',methods=['POST'])
-def indexpost():
-
-    # should definitely add some sanity checks here before trying to plot
-    
-    # generate parameters for svg and render
-    return render_template('return.html',plot = plot.svgout())
 
 if __name__ == "__main__":
     app.run(debug = True)

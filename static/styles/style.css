@@ -3,6 +3,9 @@ body {
   margin: 2em;
 }
 
+input {
+    display: block;
+}
 
 svg {
     display: block;
@@ -30,4 +33,15 @@ path.area {
 .y.axis line, .y.axis path {
   fill: none;
   stroke: #000;
+}
+
+/* Loading spinner */
+
+.loading {
+    display: none;
+    margin: 2em;
+}
+
+.loadingon {
+    display: block;
 }

@@ -28,20 +28,22 @@
 
 	<a href="#" id="submit" class="onedee">submit equation</a>
 	<p id="error"></p>
+        <img id="load1" class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
       </div>
 
       <div id="twodee">
 	<p> Enter an equation in terms of x and y and I'll try to minimize it for you </p>
 
 	<input class="twodee" type="text" name="equation"
-	       value="(1-x)**2 + 100*(y-x**2)**2"/>
-	<input class="twodee" type="text" name="xmin" value="-1.5"/>
-	<input class="twodee" type="text" name="xmax" value="1.5"/>
-	<input class="twodee" type="text" name="ymin" value="-0.5"/>
-	<input class="twodee" type="text" name="ymax" value="3"/>
+	       value="(1-x)^2 + 100*(y-x^2)^2"/>
+	       <input class="twodee" type="text" name="xmin" value="-1.5"/>
+	       <input class="twodee" type="text" name="xmax" value="1.5"/>
+	       <input class="twodee" type="text" name="ymin" value="-0.5"/>
+	       <input class="twodee" type="text" name="ymax" value="3"/>
 
-	<a href="#" id="submit" class="twodee">submit equation</a>
-	<p id="error"></p>
+	       <a href="#" id="submit" class="twodee">submit equation</a>
+               <img id="load2" class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
+	       <p id="error"></p>
       </div>
     </div>
 

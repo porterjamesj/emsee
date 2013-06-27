@@ -39,27 +39,31 @@ $(function() {
     // clear previous svg from the correct tab
     d3.select("#" + obj.attr("class")).select("svg").remove();
 
-    // Get data from the right form
+    // Select correct html elements to work on in the ajax call
     if(obj.attr("class") == "onedee") {
-      data = {eq: $('input.onedee[name="equation"]').val(),
+      var data = {eq: $('input.onedee[name="equation"]').val(),
               xmin: $('input.onedee[name="xmin"]').val(),
               xmax: $('input.onedee[name="xmax"]').val(),
-              dim: 1}
+              dim: 1};
+      var elem = $('#load1');
     } else if(obj.attr("class") == "twodee") {
-      data = {eq: $('input.twodee[name="equation"]').val(),
+      var data = {eq: $('input.twodee[name="equation"]').val(),
               xmin: $('input.twodee[name="xmin"]').val(),
               xmax: $('input.twodee[name="xmax"]').val(),
               ymin: $('input.twodee[name="ymin"]').val(),
               ymax: $('input.twodee[name="ymax"]').val(),
-              dim: 2}
+              dim: 2};
+      var elem = $('#load2');
     }
 
-    // Make the ajax call using the right data
+    // Make the ajax call using the right elements/data
     $.ajax({
       dataType: "json",
       url: $SCRIPT_ROOT + '/drawgraph',
       data: data,
-      success: function (data) {callback(data,obj.attr("class"));}
+      success: function (data) {callback(data,obj.attr("class"));},
+      beforeSend: function() { elem.show() },
+      complete: function() { elem.hide() }
     });
   };
 

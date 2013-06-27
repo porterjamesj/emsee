@@ -3,7 +3,7 @@ body {
   margin: 2em;
 }
 
-input {
+.ui-widget .field {
     display: block;
 }
 

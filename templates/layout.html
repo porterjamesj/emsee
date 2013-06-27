@@ -9,6 +9,7 @@
   var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
 <!-- styles -->
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}" />
 <body>
   {% block body %}{% endblock %}

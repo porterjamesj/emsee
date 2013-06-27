@@ -19,7 +19,7 @@ class Plot:
         try:
             self.exp = parse_expr(str(sy.sympify(self.eq)))
             # str b/c sympy does not like unicode
-            #sympify so that ^ is an acceptable exponentiation operator.
+            #sympify so that ^ is an acceptable exponentiation operator
         except:
             raise RuntimeError("Equation parsing failed.")
         #validate ranges

@@ -39,24 +39,29 @@ $(function() {
     // clear previous svg from the correct tab
     d3.select("#" + obj.attr("class")).select("svg").remove();
 
+    // Get data from the right form
     if(obj.attr("class") == "onedee") {
-      $.getJSON($SCRIPT_ROOT + '/drawgraph',
-                {eq: $('input.onedee[name="equation"]').val(),
-                 xmin: $('input.onedee[name="xmin"]').val(),
-                 xmax: $('input.onedee[name="xmax"]').val(),
-                 dim: 1},
-                function (data) {callback(data,obj.attr("class"));});
+      data = {eq: $('input.onedee[name="equation"]').val(),
+              xmin: $('input.onedee[name="xmin"]').val(),
+              xmax: $('input.onedee[name="xmax"]').val(),
+              dim: 1}
     } else if(obj.attr("class") == "twodee") {
-      $.getJSON($SCRIPT_ROOT + '/drawgraph',
-                {eq: $('input.twodee[name="equation"]').val(),
-                 xmin: $('input.twodee[name="xmin"]').val(),
-                 xmax: $('input.twodee[name="xmax"]').val(),
-                 ymin: $('input.twodee[name="ymin"]').val(),
-                 ymax: $('input.twodee[name="ymax"]').val(),
-                 dim: 2},
-                function (data) {callback(data,obj.attr("class"));});
+      data = {eq: $('input.twodee[name="equation"]').val(),
+              xmin: $('input.twodee[name="xmin"]').val(),
+              xmax: $('input.twodee[name="xmax"]').val(),
+              ymin: $('input.twodee[name="ymin"]').val(),
+              ymax: $('input.twodee[name="ymax"]').val(),
+              dim: 2}
     }
-  }
+
+    // Make the ajax call using the right data
+    $.ajax({
+      dataType: "json",
+      url: $SCRIPT_ROOT + '/drawgraph',
+      data: data,
+      success: function (data) {callback(data,obj.attr("class"));}
+    });
+  };
 
   /*
    * Bind clicking and keydown to submit the data to the server.
@@ -76,4 +81,8 @@ $(function() {
         submit(this);
       }
     });
+
+  /*
+   * Bind hiding and showing the loading spinner to AJAX event handlers
+   */
 });

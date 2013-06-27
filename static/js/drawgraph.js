@@ -62,8 +62,8 @@ $(function() {
       url: $SCRIPT_ROOT + '/drawgraph',
       data: data,
       success: function (data) {callback(data,obj.attr("class"));},
-      beforeSend: function() { elem.show() },
-      complete: function() { elem.hide() }
+      beforeSend: function() { elem.addClass("loadingon") },
+      complete: function() { elem.removeClass("loadingon") }
     });
   };
 

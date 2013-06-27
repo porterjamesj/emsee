@@ -3,6 +3,10 @@ body {
   margin: 2em;
 }
 
+input {
+    display: block;
+}
+
 svg {
     display: block;
 }
@@ -35,4 +39,9 @@ path.area {
 
 .loading {
     display: none;
+    margin: 2em;
+}
+
+.loadingon {
+    display: block;
 }

@@ -43,15 +43,17 @@ $(function() {
       $.getJSON($SCRIPT_ROOT + '/drawgraph',
                 {eq: $('input.onedee[name="equation"]').val(),
                  xmin: $('input.onedee[name="xmin"]').val(),
-                 xmax: $('input.onedee[name="xmax"]').val()},
+                 xmax: $('input.onedee[name="xmax"]').val(),
+                 dim: 1},
                 function (data) {callback(data,obj.attr("class"));});
     } else if(obj.attr("class") == "twodee") {
-      $.getJSON($SCRIPT_ROOT + '/drawgraph2d',
+      $.getJSON($SCRIPT_ROOT + '/drawgraph',
                 {eq: $('input.twodee[name="equation"]').val(),
                  xmin: $('input.twodee[name="xmin"]').val(),
                  xmax: $('input.twodee[name="xmax"]').val(),
                  ymin: $('input.twodee[name="ymin"]').val(),
-                 ymax: $('input.twodee[name="ymax"]').val()},
+                 ymax: $('input.twodee[name="ymax"]').val(),
+                 dim: 2},
                 function (data) {callback(data,obj.attr("class"));});
     }
   }

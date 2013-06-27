@@ -17,8 +17,9 @@ class Plot:
             setattr(self, key, nums[key])
         #try to parse the given equation
         try:
-            self.exp = parse_expr(str(self.eq))
+            self.exp = parse_expr(str(sy.sympify(self.eq)))
             # str b/c sympy does not like unicode
+            #sympify so that ^ is an acceptable exponentiation operator.
         except:
             raise RuntimeError("Equation parsing failed.")
         #validate ranges

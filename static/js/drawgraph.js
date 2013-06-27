@@ -7,9 +7,9 @@ $(function() {
   var callback = function(data,dim) {
     //First check for errors
     if (data.error == 0) { //This was a parse error
-
+      console.log("parse")
     } else if (data.error == 1) { //This was an evaluation error
-
+      console.log("eval")
     }
 
     // check dims and construct the appropriate type of plot
@@ -39,27 +39,28 @@ $(function() {
    * to which the resulting plot should be appended.
    */
   var submit = function(obj) {
+    //  dont think this is necessary
     if(!(obj instanceof jQuery)) {
       obj = $(obj);
     }
 
-    // clear previous svg from the correct tab
-    d3.select("#" + obj.attr("class")).select("svg").remove();
+    // clear previous svg
+    obj.children("svg").remove();
 
     // Select correct html elements to work on in the ajax call
-    if(obj.attr("class") == "onedee") {
-      var data = {eq: $('input.onedee[name="equation"]').val(),
-              xmin: $('input.onedee[name="xmin"]').val(),
-              xmax: $('input.onedee[name="xmax"]').val(),
+    if(obj.attr("id") == "onedee") {
+      var data = {eq: obj.find('input[name="equation"]').val(),
+              xmin: obj.find('input[name="xmin"]').val(),
+              xmax: obj.find('input[name="xmax"]').val(),
               dim: 1};
       var elem = $('#load1');
       var url = '/graph/1d'
-    } else if(obj.attr("class") == "twodee") {
-      var data = {eq: $('input.twodee[name="equation"]').val(),
-              xmin: $('input.twodee[name="xmin"]').val(),
-              xmax: $('input.twodee[name="xmax"]').val(),
-              ymin: $('input.twodee[name="ymin"]').val(),
-              ymax: $('input.twodee[name="ymax"]').val(),
+    } else if(obj.attr("id") == "twodee") {
+      var data = {eq: obj.find('input[name="equation"]').val(),
+              xmin: obj.find('input[name="xmin"]').val(),
+              xmax: obj.find('input[name="xmax"]').val(),
+              ymin: obj.find('input[name="ymin"]').val(),
+              ymax: obj.find('input[name="ymax"]').val(),
               dim: 2};
       var elem = $('#load2');
       var url = '/graph/2d'
@@ -70,7 +71,7 @@ $(function() {
       dataType: "json",
       url: $SCRIPT_ROOT + url,
       data: data,
-      success: function (data) {callback(data,obj.attr("class"));},
+      success: function (data) {callback(data,obj.attr("id"));},
       beforeSend: function() { elem.addClass("loadingon") },
       complete: function() { elem.removeClass("loadingon") }
     });
@@ -79,19 +80,19 @@ $(function() {
   /*
    * Bind clicking and keydown to submit the data to the server.
    */
-  $('a#submit').click(function() { submit(this); });
+  $('a#submit').click(function() { submit($(this).parent()); });
 
   $('input.onedee').keydown(
     function (e) {
       if (e.keyCode === 13) {
-        submit(this);
+        submit(this.parent());
       }
     });
 
   $('input.twodee').keydown(
     function (e) {
       if (e.keyCode === 13) {
-        submit(this);
+        submit(this.parent());
       }
     });
 

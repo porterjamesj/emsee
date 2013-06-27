@@ -5,8 +5,15 @@ $(function() {
    * constructed and the svg drawn/animated.
    */
   var callback = function(data,dim) {
+    //First check for errors
+    if (data.error == 0) { //This was a parse error
+
+    } else if (data.error == 1) { //This was an evaluation error
+
+    }
+
     // check dims and construct the appropriate type of plot
-    if(dim === "onedee") {
+    if (dim === "onedee") {
       plot = new OneDeePlot(600,500,
                             {top: 80, right: 80, bottom: 80, left: 80},
                             data);
@@ -46,6 +53,7 @@ $(function() {
               xmax: $('input.onedee[name="xmax"]').val(),
               dim: 1};
       var elem = $('#load1');
+      var url = '/graph/1d'
     } else if(obj.attr("class") == "twodee") {
       var data = {eq: $('input.twodee[name="equation"]').val(),
               xmin: $('input.twodee[name="xmin"]').val(),
@@ -54,12 +62,13 @@ $(function() {
               ymax: $('input.twodee[name="ymax"]').val(),
               dim: 2};
       var elem = $('#load2');
+      var url = '/graph/2d'
     }
 
     // Make the ajax call using the right elements/data
     $.ajax({
       dataType: "json",
-      url: $SCRIPT_ROOT + '/drawgraph',
+      url: $SCRIPT_ROOT + url,
       data: data,
       success: function (data) {callback(data,obj.attr("class"));},
       beforeSend: function() { elem.addClass("loadingon") },

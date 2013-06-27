@@ -1,3 +1,10 @@
+// Utility function for constructors
+var extend = function(target,obj) {
+  for (var i in obj) {
+    target[i] = obj[i];
+  }
+}
+
 var Plot = function(swidth,sheight,margin) {
   this.swidth = swidth;
   this.sheight = sheight;
@@ -72,10 +79,7 @@ Plot.prototype.animateChain = function() {
  */
 var OneDeePlot = function(swidth,sheight,margin,data) {
   Plot.call(this,swidth,sheight,margin);
-  this.points = data['points'];
-  this.xmin = data['xmin'];
-  this.xmax = data['xmax'];
-  this.chain = data['chain'];
+  extend(this,data);
 }
 // Inheritance
 OneDeePlot.prototype = Object.create(Plot.prototype);
@@ -134,14 +138,7 @@ OneDeePlot.prototype.draw = function () {
  */
 var TwoDeePlot = function(swidth,sheight,margin,data) {
   Plot.call(this,swidth,sheight,margin);
-  this.zs = data['zs'];
-  this.xmin = data['xmin'];
-  this.xmax = data['xmax'];
-  this.ymin = data['ymin'];
-  this.ymax = data['ymax'];
-  this.zmin = data['zmin'];
-  this.zmax = data['zmax'];
-  this.chain = data['chain'];
+  extend(this,data);
 };
 // Inheritance
 TwoDeePlot.prototype = Object.create(Plot.prototype);

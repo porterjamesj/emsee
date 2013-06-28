@@ -17,7 +17,7 @@ def buildjson(constructor):
     try:
         plot.evaluate()
     except:
-        return  jsonify({"message":"evaluation error",
+        return jsonify({"message":"evaluation error",
                          "errcode":1})
     plot.sample()
     return jsonify(plot.toclient())

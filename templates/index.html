@@ -18,7 +18,7 @@
       <li><a href="#twodee">Two Dimensions</a></li>
     </ul>
 
-    <div id="onedee">
+    <div class = "tab" id="onedee">
       <p> Enter an equation in terms of x and I'll try to minimize it for you. </p>
 
       <div class="field">Equation: <input class="onedee" type="text" name="equation" size="30" value="cos(x)"/></div>
@@ -30,13 +30,13 @@
       <img id="load1" class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
     </div>
 
-    <div id="twodee">
+    <div class="tab" id="twodee">
       <p> Enter an equation in terms of x and y and I'll try to minimize it for you </p>
 
       <div class="field">Equation: <input class="twodee" type="text" name="equation" size="30" value="(1-x)^2 + 100*(y-x^2)^2"/></div>
       <div class="field">xmin: <input class="twodee" type="text" name="xmin" value="-1.5"/></div>
       <div class="field">xmax: <input class="twodee" type="text" name="xmax" value="1.5"/></div>
-      <div class="field">xmax: <input class="twodee" type="text" name="ymin" value="-0.5"/></div>
+      <div class="field">ymin: <input class="twodee" type="text" name="ymin" value="-0.5"/></div>
       <div class="field">ymin: <input class="twodee" type="text" name="ymax" value="3"/></div>
       <a href="#" id="submit" class="twodee">submit equation</a>
 

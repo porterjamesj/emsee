@@ -1,31 +1,52 @@
 $(function() {
   /*
+   * Utility function to flash an error div on a given selection.
+   */
+  var errorctrl = function(sel,msg) {
+    sel.children("#error")
+      .text(msg)
+      .fadeIn(500)
+      .delay(3000)
+      .fadeOut(500);
+  }
+
+  /*
    * Callback function that runs after the server returns
    * from the AJAX call. This is where the plot object is actually
-   * constructed and the svg drawn/animated.
+   * constructed and the svg drawn/animated. Data parameter is what
+   * comes back from the server via ajax, obj is the object to which
+   * the draw svg is to be appended.
    */
-  var callback = function(data,dim) {
+  var callback = function(data,obj) {
     //First check for errors
-    if (data.error == 0) { //This was a parse error
-      console.log("parse")
-    } else if (data.error == 1) { //This was an evaluation error
-      console.log("eval")
+    if (data.errcode == 0) { //This was a parse error
+      errorctrl(obj,"Errr, sorry, I couldn't parse that.");
+      return;
+    } else if (data.errcode == 1) { //This was an evaluation error
+      errorctrl(
+        obj,
+        "There was an error evaluating your function, possibly a complex number"
+      );
+      return;
     }
 
     // check dims and construct the appropriate type of plot
-    if (dim === "onedee") {
+    if (obj.attr("id") === "onedee") {
       plot = new OneDeePlot(600,500,
                             {top: 80, right: 80, bottom: 80, left: 80},
                             data);
-    } else if(dim === "twodee") {
+    } else if(obj.attr("id") === "twodee") {
       plot = new TwoDeePlot(600,500,
                             {top: 80, right: 80, bottom: 80, left: 80},
                             data);
     }
     console.log(plot);
 
-    // Now append an svg to the correct div for whichever tab we're in
-    plot.makeSvg(d3.select("#" + dim));
+    /* Now append an svg to the correct div for whichever tab we're in
+     * Its a bit messy, but the jQuery selection is being converted to
+     * a d3 selection
+     */
+    plot.makeSvg(d3.select(obj.get(0)));
     plot.makeScales();
     plot.draw();
 
@@ -47,7 +68,7 @@ $(function() {
     // clear previous svg
     obj.children("svg").remove();
 
-    // Select correct html elements to work on in the ajax call
+    // Give the ajax call the right data
     if(obj.attr("id") == "onedee") {
       var data = {eq: obj.find('input[name="equation"]').val(),
               xmin: obj.find('input[name="xmin"]').val(),
@@ -71,7 +92,7 @@ $(function() {
       dataType: "json",
       url: $SCRIPT_ROOT + url,
       data: data,
-      success: function (data) {callback(data,obj.attr("id"));},
+      success: function (data) {callback(data,obj);},
       beforeSend: function() { elem.addClass("loadingon") },
       complete: function() { elem.removeClass("loadingon") }
     });
@@ -80,19 +101,13 @@ $(function() {
   /*
    * Bind clicking and keydown to submit the data to the server.
    */
-  $('a#submit').click(function() { submit($(this).parent()); });
+  $('a#submit').click(function() { submit($(this).parents(".tab")); });
 
-  $('input.onedee').keydown(
+  $('input').keydown(
     function (e) {
+      console.log(e);
       if (e.keyCode === 13) {
-        submit(this.parent());
-      }
-    });
-
-  $('input.twodee').keydown(
-    function (e) {
-      if (e.keyCode === 13) {
-        submit(this.parent());
+        submit($(this).parents(".tab"));
       }
     });
 

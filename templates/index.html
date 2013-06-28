@@ -26,6 +26,8 @@
       <div class="field">xmax: <input class="onedee" type="text" name="xmax" value="10"/></div>
       <a href="#" class="onedee" id="submit">submit equation</a>
 
+      <p class="render">`cos(x)`</p>
+
       <p id="error"></p>
       <img id="load1" class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
     </div>
@@ -39,6 +41,8 @@
       <div class="field">ymin: <input class="twodee" type="text" name="ymin" value="-0.5"/></div>
       <div class="field">ymin: <input class="twodee" type="text" name="ymax" value="3"/></div>
       <a href="#" id="submit" class="twodee">submit equation</a>
+
+      <p class="render">`(1-x)^2 + 100*(y-x^2)^2`</p>
 
       <p id="error"></p>
       <img id="load2" class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>

@@ -112,6 +112,14 @@ $(function() {
     });
 
   /*
-   * Bind hiding and showing the loading spinner to AJAX event handlers
+   * Bind key events in the equation input fields to changing the appropriate
+   * math rendering <p>
    */
+  $('input[name=equation]').keyup(
+    function() {
+      var self = $(this);
+      var rend = self.parent().siblings('.render');
+      rend.text("`" + self.val() + "`");
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub,rend.get(0)]);
+    });
 });

@@ -120,7 +120,8 @@ class TwoDeePlot(Plot):
         """Generate a Markov chain of length `nsamples`"""
         xvar = (self.xmax-self.xmin)/vardivx
         yvar = (self.ymax-self.ymin)/vardivy
-        cov = np.array([[xvar,0],[0,yvar]])
+        cov = np.array([[xvar,np.mean([xvar,yvar])/15],
+                        [np.mean([xvar,yvar])/15,yvar]])
 
         sampler = emcee.MHSampler(cov, 2, self.__lnprobfn)
 

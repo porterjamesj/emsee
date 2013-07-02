@@ -3,11 +3,15 @@ $(function() {
    * Utility function to flash an error div on a given selection.
    */
   var errorctrl = function(sel,msg) {
-    sel.children("#error")
-      .text(msg)
-      .fadeIn(500)
-      .delay(1500)
-      .fadeOut(500);
+    if(!this.blocked) {
+      this.blocked = true;
+      sel.children("#error")
+        .text(msg)
+        .fadeIn(500)
+        .delay(1500)
+        .fadeOut(500);
+      setTimeout(function () { this.blocked = false; },2500);
+    }
   }
 
   /*
@@ -31,11 +35,11 @@ $(function() {
     }
 
     // check dims and construct the appropriate type of plot
-    if (obj.attr("id") === "onedee") {
+    if (typeof data.points !== 'undefined') {
       plot = new OneDeePlot(600,500,
                             {top: 80, right: 80, bottom: 80, left: 80},
                             data);
-    } else if(obj.attr("id") === "twodee") {
+    } else if(typeof data.points === 'undefined') {
       plot = new TwoDeePlot(600,500,
                             {top: 80, right: 80, bottom: 80, left: 80},
                             data);
@@ -44,7 +48,7 @@ $(function() {
 
     /* Now append an svg to the correct div for whichever tab we're in
      * Its a bit messy, but the jQuery selection is being converted to
-     * a d3 selection
+     * a d3 selection.
      */
     plot.makeSvg(d3.select(obj.get(0)));
     plot.makeScales();

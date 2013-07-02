@@ -6,7 +6,7 @@ $(function() {
     sel.children("#error")
       .text(msg)
       .fadeIn(500)
-      .delay(3000)
+      .delay(1500)
       .fadeOut(500);
   }
 
@@ -56,13 +56,16 @@ $(function() {
 
   /*
    * Function called when the user submits form data.
-   * Takes as input either a DOM element or jQuery selection
-   * to which the resulting plot should be appended.
+   * Takes as input the jQuery selection
+   * to which the resulting plot should be appended, as well as the
+   * variable to which the jqxhr object should be bound.
    */
   var submit = function(obj) {
-    //  dont think this is necessary
-    if(!(obj instanceof jQuery)) {
-      obj = $(obj);
+    // try to kill the outstanding request
+    try {
+      this.jqxhr.abort();
+    } catch(e) {
+      console.log(e);
     }
 
     // clear previous svg
@@ -87,8 +90,10 @@ $(function() {
       var url = '/graph/2d'
     }
 
-    // Make the ajax call using the right elements/data
-    $.ajax({
+    /* Make the ajax call using the right elements/data
+     * while binding the request to the jqxhr object
+     */
+    this.jqxhr = $.ajax({
       dataType: "json",
       url: $SCRIPT_ROOT + url,
       data: data,

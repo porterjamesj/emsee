@@ -25,6 +25,10 @@ class Plot:
         #validate ranges
         if self.xmin >= self.xmax:
             raise RuntimeError("Invalid range.")
+        if hasattr(self,'ymin'):
+            if self.ymin >= self.ymax:
+                raise RuntimeError("Invalid range.")
+
 
 class OneDeePlot(Plot):
     """One dimensional plot class."""
@@ -93,13 +97,10 @@ class TwoDeePlot(Plot):
         self.xs = list(np.arange(self.xmin, self.xmax, stepsizex))
         self.ys = list(np.arange(self.ymin, self.ymax, stepsizey))
 
-        # try:
         self.zs = [[float(self.exp.evalf(subs={sy.Symbol('x'):i,
                                           sy.Symbol('y'):j}))
                     for j in self.ys]
                     for i in self.xs]
-        # except:
-            # raise RuntimeError("Evaluation failed.")
 
         # get min and max z value
         self.zmin = min([min(row) for row in self.zs])
@@ -120,8 +121,8 @@ class TwoDeePlot(Plot):
         """Generate a Markov chain of length `nsamples`"""
         xvar = (self.xmax-self.xmin)/vardivx
         yvar = (self.ymax-self.ymin)/vardivy
-        cov = np.array([[xvar,np.mean([xvar,yvar])/15],
-                        [np.mean([xvar,yvar])/15,yvar]])
+        cov = np.array([[xvar,0],
+                        [0,yvar]])
 
         sampler = emcee.MHSampler(cov, 2, self.__lnprobfn)
 

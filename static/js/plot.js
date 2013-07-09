@@ -1,3 +1,9 @@
+// can this all go in a module that exports OneDeePlot and TwoDeePlot?
+
+// can you get rid of the need for inheritance by separating drawing and coordinate
+// calculation? Could have plot calculate points and scales, then pass to generic
+// drawing and scale making fn
+
 // Utility function for constructors
 var extend = function(target,obj) {
   for (var i in obj) {
@@ -30,7 +36,7 @@ Plot.prototype.makeSvg = function(element) {
 
 Plot.prototype.animateChain = function() {
   // Counter for chain step
-  var i = 1
+  var i = 1 // best to be consistent about putting in semicolons
   // Initialize circle
   var self = this;
 
@@ -49,6 +55,9 @@ Plot.prototype.animateChain = function() {
       .attr("cx", function(d) { return self.fxsc(d); })
       .attr("cy", this.height);
   }
+
+  // can you just do setInterval() with anon fn
+  // to avoid repetition of 500 and creation of an immediately invoked fn?
 
   var update = function() {
     console.log(i);
@@ -138,7 +147,7 @@ OneDeePlot.prototype.draw = function () {
  */
 var TwoDeePlot = function(swidth,sheight,margin,data) {
   Plot.call(this,swidth,sheight,margin);
-  extend(this,data);
+  extend(this,data); // can be dangerous to blindly copy stuff onto obj
 };
 // Inheritance
 TwoDeePlot.prototype = Object.create(Plot.prototype);

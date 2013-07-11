@@ -1,1 +1,0 @@
-- Add a minimum x and y range so that trying to plot a horizontal line doesn't break everything

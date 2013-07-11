@@ -1,237 +1,190 @@
-// can this all go in a module that exports OneDeePlot and TwoDeePlot?
+;(function (exports) {
 
-// can you get rid of the need for inheritance by separating drawing and coordinate
-// calculation? Could have plot calculate points and scales, then pass to generic
-// drawing and scale making fn
-
-// Utility function for constructors
-var extend = function(target,obj) {
-  for (var i in obj) {
-    target[i] = obj[i];
-  }
-}
-
-var Plot = function(swidth,sheight,margin) {
-  this.swidth = swidth;
-  this.sheight = sheight;
-  this.margin = margin;
-  this.width = swidth - margin.left - margin.right;
-  this.height = sheight - margin.top - margin.bottom;
-};
-
-/*
- * Append an svg on which to draw the plot.
- */
-Plot.prototype.makeSvg = function(element) {
-  element.append("svg")
-    .attr("width",this.swidth)
-    .attr("height",this.sheight)
-    .append("svg:g")
-    .attr("id","plot")
-    .attr("transform",
-          "translate(" + this.margin.left + "," + this.margin.top  + ")");
-
-  this.svg = element.select("g#plot");
-};
-
-Plot.prototype.animateChain = function() {
-  // Counter for chain step
-  var i = 1 // best to be consistent about putting in semicolons
-  // Initialize circle
-  var self = this;
-
-  var circle = this.svg.selectAll("circle")
-    .data(self.chain.slice(0,1))
-    .enter().append("circle")
-    .attr("r",10);
-
-  // Initialize circle location
-  if(self.constructor === TwoDeePlot) { // This is a TwoDeePlot
-    circle
-      .attr("cx", function(d) { return self.fxsc(d[0]); })
-      .attr("cy", function(d) { return self.fysc(d[1]); });
-  } else { // This is a OneDeePlot
-    circle
-      .attr("cx", function(d) { return self.fxsc(d); })
-      .attr("cy", this.height);
-  }
-
-  // can you just do setInterval() with anon fn
-  // to avoid repetition of 500 and creation of an immediately invoked fn?
-
-  var update = function() {
-    console.log(i);
-    if (i < self.chain.length) {
-      circle.data(self.chain.slice(i,i+1))
-      if(self.constructor === TwoDeePlot) { // This is a TwoDeePlot
-        circle
-          .transition()
-          .attr("cx", function(d) { console.log(d);
-                                    console.log(self.fxsc(d[0]));
-                                    return self.fxsc(d[0]); })
-          .attr("cy", function(d) { return self.fysc(d[1]); });
-      } else { // This is a OneDeePlot
-        circle
-          .transition()
-          .attr("cx", function(d) { return self.fxsc(d); })
-      }
-      i++;
-    }
-    setTimeout(update,500);
+  var calcDims = function(data) {
+    data.width = data.swidth - data.margin.left - data.margin.right;
+    data.height = data.sheight - data.margin.top - data.margin.bottom;
   };
 
-  setTimeout(update,500);
-};
+  var makeSvg = function(element,data) {
+    element.append("svg")
+      .attr("width",data.swidth)
+      .attr("height",data.sheight)
+      .append("svg:g")
+      .attr("id","plot")
+      .attr("transform",
+            "translate(" + data.margin.left + "," + data.margin.top  + ")");
+    return element.select("g#plot");
+  };
 
-/*
- * Subclass for a one dimensional plot
- */
-var OneDeePlot = function(swidth,sheight,margin,data) {
-  Plot.call(this,swidth,sheight,margin);
-  extend(this,data);
-}
-// Inheritance
-OneDeePlot.prototype = Object.create(Plot.prototype);
-// Correct constructor
-OneDeePlot.prototype.constructor = OneDeePlot
+  var animateChain = function(svg,data) {
+    // Counter for chain step
+    var i = 1;
 
-/*
- * Make scales to map from function space into svg space
- */
-OneDeePlot.prototype.makeScales = function() {
-  this.fxsc = d3.scale.linear()
-    .domain([this.xmin,this.xmax])
-    .range([0,this.width]);
+    var self = this;
 
-  this.fysc = d3.scale.linear()
-    .domain([d3.min(_.pluck(this.points,1)),d3.max(_.pluck(this.points,1))])
-    .range([this.height,0]);
-};
+    // Initialize circle
+    var circle = svg.selectAll("circle")
+      .data(data.chain.slice(0,1))
+      .enter().append("circle")
+      .attr("r",10);
 
-/*
- * Draw the plot on the svg
- */
-OneDeePlot.prototype.draw = function () {
+    // Initialize circle location
+    if(data.dims === 2) { // This is a TwoDeePlot
+      circle
+        .attr("cx", function(d) { return data.fxsc(d[0]); })
+        .attr("cy", function(d) { return data.fysc(d[1]); });
+    } else if (data.dims === 1) { // This is a OneDeePlot
+      circle
+        .attr("cx", function(d) { return data.fxsc(d); })
+        .attr("cy", data.height);
+    }
 
-  var self = this;
+    setInterval(function() {
+      console.log(i);
+      if (i < data.chain.length) {
+        circle.data(data.chain.slice(i,i+1));
+        if(data.dims === 2) { // This is a TwoDeePlot
+          circle
+            .transition()
+            .attr("cx", function(d) { return data.fxsc(d[0]); })
+            .attr("cy", function(d) { return data.fysc(d[1]); });
+        } else if(data.dims === 1) { // This is a OneDeePlot
+          circle
+            .transition()
+            .attr("cx", function(d) { return data.fxsc(d); });
+        }
+        i++;
+      }
+    },500);
+  };
 
-  this.lineFunction = d3.svg.line()
-    .x(function(d) { return this.fxsc(d[0]); })
-    .y(function(d) { return this.fysc(d[1]); })
-    .interpolate("linear");
+  exports.drawOneDee = function (element,data) {
+    /* Figure out width and height of plot. */
+    calcDims(data);
 
-  //Actually draw the plot
-  this.svg.append("svg:path")
-    .attr("d",this.lineFunction(self.points))
-    .attr("class","line");
+    /* First we need to make an svg to draw the plot on. */
+    svg = makeSvg(element,data);
+    /* Now make the scales to map from function space to svg space. */
+    data.fxsc = d3.scale.linear()
+      .domain([data.xmin,data.xmax])
+      .range([0,data.width]);
 
-  // Add axes
-  this.svg.append("svg:g")
-    .attr("transform","translate(0," + self.height + ")")
-    .attr("class","x axis")
-    .call(d3.svg.axis()
-          .scale(this.fxsc)
-          .orient("bottom")
-          .ticks(5));
+    data.fysc = d3.scale.linear()
+      .domain([d3.min(_.pluck(data.points,1)),d3.max(_.pluck(data.points,1))])
+      .range([data.height,0]);
+    /* Now actually draw the plot. */
 
-  this.svg.append("svg:g")
-    .attr("class","y axis")
-    .call(d3.svg.axis()
-          .scale(this.fysc)
-          .orient("left")
-          .ticks(5));
-};
+    /* First produce a function to draw the polyline from the data. */
+    var lineFunction = d3.svg.line()
+      .x(function(d) { return data.fxsc(d[0]); })
+      .y(function(d) { return data.fysc(d[1]); })
+      .interpolate("linear");
 
-/*
- * Subclass for two dimensional plot
- */
-var TwoDeePlot = function(swidth,sheight,margin,data) {
-  Plot.call(this,swidth,sheight,margin);
-  extend(this,data); // can be dangerous to blindly copy stuff onto obj
-};
-// Inheritance
-TwoDeePlot.prototype = Object.create(Plot.prototype);
-// Correct constructor
-TwoDeePlot.prototype.constructor = TwoDeePlot;
+    //Actually draw the plot
+    svg.append("svg:path")
+      .attr("d",lineFunction(data.points))
+      .attr("class","line");
 
-/*
- * Make scales to map from function space into svg space,
- * from "index space" into svg space, and from z to color.
- */
-TwoDeePlot.prototype.makeScales = function() {
-  // color scale
-  this.colorsc = d3.scale.linear()
-    .domain([this.zmin, this.zmax])
-    .range(["blue", "yellow"])
-    .interpolate(d3.interpolateLab);
+    // Add axes
+    svg.append("svg:g")
+      .attr("transform","translate(0," + data.height + ")")
+      .attr("class","x axis")
+      .call(d3.svg.axis()
+            .scale(data.fxsc)
+            .orient("bottom")
+            .ticks(5));
 
-  // Scales to map from index space onto svg space
-  this.ixsc = d3.scale.linear()
-    .domain([0,this.zs[0].length])
-    .range([0,this.width]);
+    svg.append("svg:g")
+      .attr("class","y axis")
+      .call(d3.svg.axis()
+            .scale(data.fysc)
+            .orient("left")
+            .ticks(5));
 
-  this.iysc = d3.scale.linear()
-    .domain([0,this.zs.length])
-    .range([this.height,0]);
+    // Animate
+    animateChain(svg,data);
+  };
 
-  // Scales from function space into svg space
-  this.fxsc = d3.scale.linear()
-    .domain([this.xmin,this.xmax])
-    .range([0,this.width]);
+  exports.drawTwoDee = function (element,data) {
+    /* Figure out width and height of plot. */
+    calcDims(data);
 
-  this.fysc = d3.scale.linear()
-    .domain([this.ymin,this.ymax])
-    .range([this.height,0]);
-};
+    /* First make the svg. */
+    var svg = makeSvg(element,data);
 
-/*
- * Actually draw on the svg
- */
-TwoDeePlot.prototype.draw = function() {
-  //First we need to generate contours for the zs data
+    /* Now make scales. */
 
-  // Add a "cliff" to the edges so that paths fill correctly
-  var cliff = this.zmin-Math.abs(1000*this.zmax);
-  this.zs.push(d3.range(this.zs[0].length).map(function() { return cliff; }));
-  this.zs.unshift(d3.range(this.zs[0].length).map(function() { return cliff; }));
-  this.zs.forEach(function(d) {
-    d.push(cliff);
-    d.unshift(cliff);
-  });
+    /* Color scale. */
+      var colorsc = d3.scale.linear()
+      .domain([data.zmin, data.zmax])
+      .range(["blue", "yellow"])
+      .interpolate(d3.interpolateLab);
 
-  // Now do the contouring
-  var c = new Conrec();
-  var xs = d3.range(0, this.zs[0].length);
-  var ys = d3.range(0, this.zs.length);
-  var zstepsize = (this.zmax-this.zmin) / 15;
-  var levels = d3.range(this.zmin, this.zmax, zstepsize);
+    // Scales to map from index space onto svg space
+      var ixsc = d3.scale.linear()
+      .domain([0,data.zs[0].length])
+      .range([0,data.width]);
+      var iysc = d3.scale.linear()
+      .domain([0,data.zs.length])
+      .range([data.height,0]);
 
-  c.contour(this.zs, 0, xs.length-1, 0, ys.length-1, xs, ys, levels.length, levels);
+    // Scales from function space into svg space
+    data.fxsc = d3.scale.linear()
+      .domain([data.xmin,data.xmax])
+      .range([0,data.width]);
+    data.fysc = d3.scale.linear()
+      .domain([data.ymin,data.ymax])
+      .range([data.height,0]);
 
-  //Draw contours on svg
-  this.svg.selectAll("path").data(c.contourList())
-    .enter().append("svg:path")
-    .attr("d",d3.svg.line()
-          .x(function(d) { return this.ixsc(d.x); }.bind(this))
-          .y(function(d) { return this.iysc(d.y); }.bind(this)))
-    .attr("fill",function(d) { return this.colorsc(d.level); }.bind(this))
-    .attr("stroke","black");
+    /* Draw the contours. */
 
-  // TODO: Add an area calculation, order path elements by area
+    // Add a "cliff" to the edges so that paths fill correctly
+    var cliff = data.zmin-Math.abs(1000*data.zmax);
+    data.zs.push(d3.range(data.zs[0].length)
+                 .map(function() {return cliff;}));
+    data.zs.unshift(d3.range(data.zs[0].length)
+                    .map(function() {return cliff;}));
+    data.zs.forEach(function(d) {
+      d.push(cliff);
+      d.unshift(cliff);
+    });
 
-  // Draw axes
-  this.svg.append("svg:g")
-    .attr("transform","translate(0," + this.height + ")")
-    .attr("class","x axis")
-    .call(d3.svg.axis()
-          .scale(this.fxsc)
-          .orient("bottom")
-          .ticks(5));
+    // Now do the contouring
+    var c = new Conrec();
+    var xs = d3.range(0, data.zs[0].length);
+    var ys = d3.range(0, data.zs.length);
+    var zstepsize = (data.zmax-data.zmin) / 15;
+    var levels = d3.range(data.zmin, data.zmax, zstepsize);
+    c.contour(data.zs, 0, xs.length-1, 0, ys.length-1,
+              xs, ys, levels.length, levels);
 
-  this.svg.append("svg:g")
-    .attr("class","y axis")
-    .call(d3.svg.axis()
-          .scale(this.fysc)
-          .orient("left")
-          .ticks(5));
-};
+    // Now draw contours on svg
+    svg.selectAll("path").data(c.contourList())
+      .enter().append("svg:path")
+      .attr("d",d3.svg.line()
+            .x(function(d) { return ixsc(d.x); })
+            .y(function(d) { return iysc(d.y); }))
+      .attr("fill",function(d) { return colorsc(d.level); })
+      .attr("stroke","black");
+
+    //Draw axes
+    svg.append("svg:g")
+      .attr("transform","translate(0," + data.height + ")")
+      .attr("class","x axis")
+      .call(d3.svg.axis()
+            .scale(data.fxsc)
+            .orient("bottom")
+            .ticks(5));
+
+    svg.append("svg:g")
+      .attr("class","y axis")
+      .call(d3.svg.axis()
+            .scale(data.fysc)
+            .orient("left")
+            .ticks(5));
+
+    // Animate
+    animateChain(svg,data);
+  };
+
+})(this);

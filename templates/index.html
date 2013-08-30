@@ -1,14 +1,11 @@
 {% extends "layout.html" %}
 
 {% block body %}
+
 <script src="{{ url_for('static',filename='js/drawgraph.js') }}"></script>
 <script src="{{ url_for('static',filename='js/conrec.js') }}"></script>
 <script src="{{ url_for('static',filename='js/plot.js') }}"></script>
-<script>
-  $(function() {
-  $( "#tabs" ).tabs();
-  });
-</script>
+
 <body>
   <h1> emsee </h1>
 
@@ -28,7 +25,7 @@
 
       <p class="render">`cos(x)`</p>
 
-      <p id="error"></p>
+      <p class="error"></p>
       <img id="load1" class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
     </div>
 
@@ -44,7 +41,7 @@
 
       <p class="render">`(1-x)^2 + 100*(y-x^2)^2`</p>
 
-      <p id="error"></p>
+      <p class="error"></p>
       <img id="load2" class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
     </div>
   </div>

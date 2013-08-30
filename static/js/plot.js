@@ -70,7 +70,8 @@
       .range([0,data.width]);
 
     data.fysc = d3.scale.linear()
-      .domain([d3.min(_.pluck(data.points,1)),d3.max(_.pluck(data.points,1))])
+      .domain([d3.min(data.points.map(function(d) { return d[1]; })),
+               d3.max(data.points.map(function(d) { return d[1]; }))])
       .range([data.height,0]);
     /* Now actually draw the plot. */
 

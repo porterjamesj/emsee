@@ -52,10 +52,12 @@
     <script type=text/javascript>
       var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
-    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <script src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=AM_HTMLorMML-full"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.2.2/d3.v3.min.js" charset="utf-8"></script>
+    <script type="text/javascript"
+            src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=AM_HTMLorMML-full">
+    </script>
     <script src="{{ url_for('static',filename='js/drawgraph.js') }}"></script>
     <script src="{{ url_for('static',filename='js/conrec.js') }}"></script>
     <script src="{{ url_for('static',filename='js/plot.js') }}"></script>
-  </body>
+</body>
 </html>

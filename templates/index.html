@@ -1,53 +1,60 @@
-{% extends "layout.html" %}
+<!doctype html>
+<html>
+  <title> emsee </title>
+  <head>
+    <!-- styles -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/animate.css') }}" />
+  </head>
+  <body>
+    <!-- scripts -->
 
-{% block body %}
+    <h1> emsee </h1>
 
-<script src="{{ url_for('static',filename='js/drawgraph.js') }}"></script>
-<script src="{{ url_for('static',filename='js/conrec.js') }}"></script>
-<script src="{{ url_for('static',filename='js/plot.js') }}"></script>
-
-<body>
-  <h1> emsee </h1>
-
-  <div id="tabs">
-    <ul>
-      <li><a href="#onedee">One Dimension</a></li>
-      <li><a href="#twodee">Two Dimensions</a></li>
+    <ul class="selectors">
+      <li><button class="d1tab">One Dimension</button></li>
+      <li><button class="d2tab">Two Dimensions</button></li>
     </ul>
 
-    <div class = "tab" id="onedee">
+    <section id="d1">
       <p> Enter an equation in terms of x and I'll try to minimize it for you. </p>
 
-      <div class="field">Equation: <input class="onedee" type="text" name="equation" size="30" value="cos(x)"/></div>
-      <div class="field">min: <input class="onedee" type="text" name="xmin" value="-10"/></div>
-      <div class="field">xmax: <input class="onedee" type="text" name="xmax" value="10"/></div>
-      <button class="onedee" id="submit">submit equation</button>
+      <div class="field">Equation: <input class="d1" type="text" name="equation" size="30" value="cos(x)"/></div>
+      <div class="field">min: <input class="d1" type="text" name="xmin" value="-10"/></div>
+      <div class="field">xmax: <input class="d1" type="text" name="xmax" value="10"/></div>
+      <button class="d1" id="submit">submit equation</button>
 
       <p class="render">`cos(x)`</p>
 
       <p class="error"></p>
       <img id="load1" class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
-    </div>
+    </section>
 
-    <div class="tab" id="twodee">
+    <section id="d2">
       <p> Enter an equation in terms of x and y and I'll try to minimize it for you </p>
 
-      <div class="field">Equation: <input class="twodee" type="text" name="equation" size="30" value="(1-x)^2 + 100*(y-x^2)^2"/></div>
-      <div class="field">xmin: <input class="twodee" type="text" name="xmin" value="-1.5"/></div>
-      <div class="field">xmax: <input class="twodee" type="text" name="xmax" value="1.5"/></div>
-      <div class="field">ymin: <input class="twodee" type="text" name="ymin" value="-0.5"/></div>
-      <div class="field">ymin: <input class="twodee" type="text" name="ymax" value="3"/></div>
-      <button id="submit" class="twodee">submit equation</button>
+      <div class="field">Equation: <input class="d2" type="text" name="equation" size="30" value="(1-x)^2 + 100*(y-x^2)^2"/></div>
+      <div class="field">xmin: <input class="d2" type="text" name="xmin" value="-1.5"/></div>
+      <div class="field">xmax: <input class="d2" type="text" name="xmax" value="1.5"/></div>
+      <div class="field">ymin: <input class="d2" type="text" name="ymin" value="-0.5"/></div>
+      <div class="field">ymin: <input class="d2" type="text" name="ymax" value="3"/></div>
+      <button id="submit" class="d2">submit equation</button>
 
       <p class="render">`(1-x)^2 + 100*(y-x^2)^2`</p>
 
       <p class="error"></p>
       <img id="load2" class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
-    </div>
-  </div>
+    </section>
 
-  {# Plot will go here #}
+    {# Plot will go here #}
 
-</body>
-
-{% endblock %}
+    <script type=text/javascript>
+      var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=AM_HTMLorMML-full"></script>
+    <script src="{{ url_for('static',filename='js/drawgraph.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/conrec.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/plot.js') }}"></script>
+  </body>
+</html>

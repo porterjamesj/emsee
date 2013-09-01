@@ -63,7 +63,7 @@
     calcDims(data);
 
     /* First we need to make an svg to draw the plot on. */
-    svg = makeSvg(element,data);
+    var svg = makeSvg(element,data);
     /* Now make the scales to map from function space to svg space. */
     data.fxsc = d3.scale.linear()
       .domain([data.xmin,data.xmax])

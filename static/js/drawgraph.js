@@ -8,7 +8,6 @@
     return str.join("&");
   };
 
-
   /* Utility function to flash an error div on a given selection. */
   var errorctrl = function(element,msg) {
     element.select(".error")
@@ -18,7 +17,7 @@
   };
 
   var getInputOneDee = function() {
-    var tab = d3.select("#onedee");
+    var tab = d3.select("#d1");
     var data = {eq: tab.select('input[name="equation"]').node().value,
                 xmin: tab.select('input[name="xmin"]').node().value,
                 xmax: tab.select('input[name="xmax"]').node().value,
@@ -27,7 +26,7 @@
   };
 
   var getInputTwoDee = function() {
-    var tab = d3.select("#twodee");
+    var tab = d3.select("#d2");
     var data = {eq: tab.select('input[name="equation"]').node().value,
                 xmin: tab.select('input[name="xmin"]').node().value,
                 xmax: tab.select('input[name="xmax"]').node().value,
@@ -74,15 +73,27 @@
     }
   };
 
-  /* Install clickhandlers, etc. */
+  /* Functions for installing clickhandlers, etc. */
+  var animator = function(onname,offname,dir) {
+    var opp = dir === "Left" ? "Right" : "Left";
+    d3.select("." + onname + "tab").on("click", function() {
+      var on = d3.select("#" + onname);
+      var off = d3.select("#" + offname);
+      on.classed("animated fadeIn" + dir + "Big",true);
+      on.classed("fadeOut" + dir + "Big",false);
+      off.classed("animated fadeOut" + opp + "Big",true);
+      off.classed("fadeIn" + opp + "Big",false);
+    });
+  };
+
   exports.addEventListeners = function() {
 
     var sendOneDeeAjax = function() {
       /* Get the data from the DOM. */
       var data = getInputOneDee();
-      var loader = d3.select('#load1');
+      var loader = d3.select('#d1 .loading');
       var url = '/graph/1d';
-      var element = d3.select('#onedee');
+      var element = d3.select('#d1');
       /* Make an ajax call. */
       sendAjax(element,url,data,loader);
     };
@@ -90,20 +101,20 @@
     var sendTwoDeeAjax = function() {
       /* Get the data from the DOM. */
       var data = getInputTwoDee();
-      var loader = d3.select('#load2');
+      var loader = d3.select('#d2 .loading');
       var url = '/graph/2d';
-      var element = d3.select('#twodee');
+      var element = d3.select('#d2');
       /* Make an ajax call. */
       sendAjax(element,url,data,loader);
     };
 
-    d3.select('button#submit.onedee').on("click",sendOneDeeAjax);
-    d3.select('button#submit.twodee').on("click",sendTwoDeeAjax);
-    d3.selectAll('input.onedee')
+    d3.select('button#submit.d1').on("click",sendOneDeeAjax);
+    d3.select('button#submit.d2').on("click",sendTwoDeeAjax);
+    d3.selectAll('input.d1')
       .on("keydown", function () {
         if (d3.event.keyCode === 13) {sendOneDeeAjax();}
       });
-    d3.selectAll('input.twodee')
+    d3.selectAll('input.d2')
       .on("keydown", function (e) {
         if (d3.event.keyCode === 13) {sendTwoDeeAjax();}
       });
@@ -119,6 +130,11 @@
         console.log(rend.node());
         MathJax.Hub.Queue(["Typeset",MathJax.Hub,rend.node()]);
       });
+
+    /* Bind animation to tabs */
+    animator("d1","d2","Left");
+    animator("d2","d1","Right");
+    /* Make 2d tab hidden initially*/
 
   };
 

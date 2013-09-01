@@ -3,9 +3,7 @@ body {
   margin: 2em;
 }
 
-.ui-widget .field {
-    display: block;
-}
+/* SVG stuff */
 
 svg {
     display: block;
@@ -44,4 +42,14 @@ path.area {
 
 .loadingon {
     display: block;
+}
+
+/* Sections */
+
+section {
+    position: absolute;
+}
+
+section#d2 {
+    opacity: 0; /* Hide 2d section initially. */
 }

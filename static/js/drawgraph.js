@@ -37,7 +37,7 @@
   };
 
   var sendAjax = function(element,url,data,loader) {
-    loader.classed("loadingon",true);
+    loader.style("opacity","100");
     d3.json($SCRIPT_ROOT + url + "?" + serialize(data), function(err,data) {
       callback(element, data, err);
     });
@@ -45,8 +45,12 @@
 
   var callback = function(element,data,err) {
     /* Handles DOM updates. */
-    element.select("svg").remove(); /* Get rid of the old plot. */
-    element.select(".error").style("display","none"); /* Hide error message. */
+    element.select("svg g").remove(); /* Get rid of the old plot. */
+    element.select(".error")
+      .text("")
+    .classed("animated fadeIn",false); /* Hide error message. */
+
+    element.select(".loading").style("opacity","0");
 
     /* Handle errrors. */
     if (err && err.status === 400) { //This was a parse error
@@ -108,8 +112,8 @@
       sendAjax(element,url,data,loader);
     };
 
-    d3.select('button#submit.d1').on("click",sendOneDeeAjax);
-    d3.select('button#submit.d2').on("click",sendTwoDeeAjax);
+    d3.select('.d1.submit').on("click",sendOneDeeAjax);
+    d3.select('.d2.submit').on("click",sendTwoDeeAjax);
     d3.selectAll('input.d1')
       .on("keydown", function () {
         if (d3.event.keyCode === 13) {sendOneDeeAjax();}
@@ -125,7 +129,7 @@
      */
     d3.selectAll('input[name=equation]')
       .on("keyup", function() {
-        var rend = d3.select(this.parentNode.parentNode).select(".render");
+        var rend = d3.select(this.parentNode.parentNode.parentNode).select(".render");
         rend.text("`" + this.value + "`");
         console.log(rend.node());
         MathJax.Hub.Queue(["Typeset",MathJax.Hub,rend.node()]);
@@ -134,7 +138,6 @@
     /* Bind animation to tabs */
     animator("d1","d2","Left");
     animator("d2","d1","Right");
-    /* Make 2d tab hidden initially*/
 
   };
 

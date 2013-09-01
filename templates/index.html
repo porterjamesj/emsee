@@ -7,8 +7,6 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/animate.css') }}" />
   </head>
   <body>
-    <!-- scripts -->
-
     <h1> emsee </h1>
 
     <ul class="selectors">
@@ -16,38 +14,41 @@
       <li><button class="d2tab">Two Dimensions</button></li>
     </ul>
 
-    <section id="d1">
+    <div id="d1">
       <p> Enter an equation in terms of x and I'll try to minimize it for you. </p>
+      <div class="fields">
+        <p class="field"><label>Equation:</label> <input class="d1" type="text" name="equation" size="30" value="cos(x)"/></p>
+        <p class="field"><label>min:</label> <input class="d1" type="text" name="xmin" value="-10"/></p>
+        <p class="field"><label>xmax:</label> <input class="d1" type="text" name="xmax" value="10"/></p>
+      </div>
 
-      <div class="field">Equation: <input class="d1" type="text" name="equation" size="30" value="cos(x)"/></div>
-      <div class="field">min: <input class="d1" type="text" name="xmin" value="-10"/></div>
-      <div class="field">xmax: <input class="d1" type="text" name="xmax" value="10"/></div>
-      <button class="d1" id="submit">submit equation</button>
+      <button class="d1 submit" >submit equation</button>
+      <img class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
 
       <p class="render">`cos(x)`</p>
-
       <p class="error"></p>
-      <img id="load1" class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
-    </section>
+      <svg></svg>
+    </div>
 
-    <section id="d2">
+    <div id="d2">
       <p> Enter an equation in terms of x and y and I'll try to minimize it for you </p>
 
-      <div class="field">Equation: <input class="d2" type="text" name="equation" size="30" value="(1-x)^2 + 100*(y-x^2)^2"/></div>
-      <div class="field">xmin: <input class="d2" type="text" name="xmin" value="-1.5"/></div>
-      <div class="field">xmax: <input class="d2" type="text" name="xmax" value="1.5"/></div>
-      <div class="field">ymin: <input class="d2" type="text" name="ymin" value="-0.5"/></div>
-      <div class="field">ymin: <input class="d2" type="text" name="ymax" value="3"/></div>
-      <button id="submit" class="d2">submit equation</button>
+      <div class="fields">
+        <p class="field"><label>Equation:</label> <input class="d2" type="text" name="equation" size="30" value="(1-x)^2 + 100*(y-x^2)^2"/></p>
+        <p class="field"><label>xmin:</label> <input class="d2" type="text" name="xmin" value="-1.5"/></p>
+        <p class="field"><label>xmax:</label> <input class="d2" type="text" name="xmax" value="1.5"/></p>
+        <p class="field"><label>ymin:</label> <input class="d2" type="text" name="ymin" value="-0.5"/></p>
+        <p class="field"><label>ymin:</label> <input class="d2" type="text" name="ymax" value="3"/></p>
+      </div>
 
+      <button class="d2 submit">submit equation</button>
+      <img class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
       <p class="render">`(1-x)^2 + 100*(y-x^2)^2`</p>
-
       <p class="error"></p>
-      <img id="load2" class="loading" src="{{ url_for('static',filename='images/spinner.gif') }}"></img>
-    </section>
+      <svg></svg>
+    </div>
 
-    {# Plot will go here #}
-
+    <!-- scripts -->
     <script type=text/javascript>
       var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>

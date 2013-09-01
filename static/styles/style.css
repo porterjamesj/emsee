@@ -1,12 +1,14 @@
 body {
   font: 15px sans-serif;
-  margin: 2em;
+  overflow-x: hidden; /* Hack to get animations to work properly. */
+  text-align: center;
 }
 
 /* SVG stuff */
 
 svg {
     display: block;
+    margin: auto;
 }
 
 path.line {
@@ -33,23 +35,57 @@ path.area {
   stroke: #000;
 }
 
+/* Selectors */
+
+.selectors {
+    padding: 0;
+}
+
+.selectors li {
+    display: inline-block;
+}
+
 /* Loading spinner */
 
 .loading {
-    display: none;
-    margin: 2em;
-}
-
-.loadingon {
-    display: block;
+    opacity: 0;
+    display: inline;
 }
 
 /* Sections */
 
-section {
+#d1, d2 {
     position: absolute;
+    width: 1000px;
+    margin-left:-500px;
+    left:50%;
 }
 
-section#d2 {
+#d2 {
     opacity: 0; /* Hide 2d section initially. */
+}
+
+#d1 {
+    z-index: 1; /* Make sure 1d section is in front initially. */
+}
+
+/* Fields */
+
+.fields {
+    margin: 1em;
+}
+
+.field {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.field label {
+    display: inline-block;
+    text-align: right;
+    width: 100px;
+}
+
+.field input {
+    width: 100px;
 }

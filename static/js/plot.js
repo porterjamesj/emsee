@@ -6,14 +6,16 @@
   };
 
   var makeSvg = function(element,data) {
-    element.append("svg")
+    element.select("svg")
       .attr("width",data.swidth)
       .attr("height",data.sheight)
       .append("svg:g")
       .attr("id","plot")
       .attr("transform",
             "translate(" + data.margin.left + "," + data.margin.top  + ")");
-    return element.select("g#plot");
+    var hmm = element.select("svg");
+    var hmm2 = element.select("#plot");
+    return element.select("#plot");
   };
 
   var animateChain = function(svg,data) {
